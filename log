@@ -1,1 +1,2 @@
-time="2023-05-26T12:36:21+07:00" level=fatal msg="failed to connect to `host=localhost user=postgres database=customer`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)"
+time="2023-05-26T15:48:40+07:00" level=info msg="Customer GRPC Server is listening on port: 3000"
+time="2023-05-26T15:50:21+07:00" level=info msg="Plane GRPC Server is listening on port: 3001"

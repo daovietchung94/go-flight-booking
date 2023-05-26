@@ -30,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = log.Setup(conf.Logging)
+	err = log.Setup(conf.Logging, "customer_grpc")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,9 +53,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	reflection.Register(server)
 	pb.RegisterMyCustomerServer(server, handler)
 
-	server.Serve(listen)
+	log.Infof("Customer GRPC Server is listening on port: %v", conf.GRPCConf.CustomerGRPCConf.Port)
+	log.Fatal(server.Serve(listen))
 }

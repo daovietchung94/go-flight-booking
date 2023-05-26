@@ -13,8 +13,8 @@ var Logger *logrus.Logger
 
 // Config represents configuration details for logging.
 type Config struct {
-	Filename string `json:"filename"`
-	Level    string `json:"level"`
+	PreFilename string `json:"pre_filename"`
+	Level       string `json:"level"`
 }
 
 func init() {
@@ -23,7 +23,7 @@ func init() {
 }
 
 // Setup configures the logger based on options in the config.json.
-func Setup(config *Config) error {
+func Setup(config *Config, serviceName string) error {
 	var err error
 	// Set up logging level
 	level := logrus.InfoLevel
@@ -35,7 +35,7 @@ func Setup(config *Config) error {
 	}
 	Logger.SetLevel(level)
 	// Set up logging to a file if specified in the config
-	logFile := config.Filename
+	logFile := config.PreFilename + "_" + serviceName + ".log"
 	if logFile != "" {
 		f, err := os.OpenFile(logFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 		if err != nil {

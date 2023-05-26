@@ -30,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = log.Setup(conf.Logging)
+	err = log.Setup(conf.Logging, "plane_grpc")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,5 +56,6 @@ func main() {
 	reflection.Register(server)
 	pb.RegisterMyPlaneServer(server, handler)
 
-	server.Serve(listen)
+	log.Infof("Plane GRPC Server is listening on port: %v", conf.GRPCConf.PlaneGRPCConf.Port)
+	log.Fatal(server.Serve(listen))
 }

@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = log.Setup(conf.Logging)
+	err = log.Setup(conf.Logging, "customer_restapi")
 	if err != nil {
 		log.Fatal(err)
 	}

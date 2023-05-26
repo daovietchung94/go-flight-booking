@@ -18,7 +18,7 @@
     }
   },
   "logging": {
-    "filename": "log",
+    "pre_filename": "log",
     "level": "info"
   },
   "grpc": {
