@@ -1,0 +1,1 @@
+time="2023-05-26T12:36:21+07:00" level=fatal msg="failed to connect to `host=localhost user=postgres database=customer`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)"

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "./;pb";
+
+import "date.proto";
+
+service MyFlight {
+    rpc CreateFlight(Flight) returns (Flight);
+    rpc UpdateFlight(Flight) returns (Flight);
+    rpc FlightDetails(FindFlightRequest) returns (Flight);
+}
+
+message Flight {
+    string id = 1;
+    string number = 2;
+    int32 plane_id = 3;
+    int32 num_of_seats = 5;
+    string from_city = 6;
+    string to_city = 7;
+    Date dep_time = 8;
+    Date arr_time = 9;
+}
+
+message FindFlightRequest {
+    string id = 1;
+}

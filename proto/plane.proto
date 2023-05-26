@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "./;pb";
+
+service MyPlane {
+    rpc CreatePlane(Plane) returns (Plane);
+    rpc UpdatePlane(Plane) returns (Plane);
+    rpc PlaneDetails(FindPlaneRequest) returns (Plane);
+}
+
+message Plane {
+    string id = 1;
+    string number = 2;
+    int32 num_of_seats = 3;
+    string status = 4;
+}
+
+message FindPlaneRequest {
+    string id = 1;
+}

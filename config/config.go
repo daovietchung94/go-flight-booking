@@ -14,12 +14,14 @@ type Config struct {
 
 type ApiServer struct {
 	CustomerApiConf Server `json:"customer"`
+	PlaneApiConf    Server `json:"plane"`
 	FlightApiConf   Server `json:"flight"`
 	BookingApiConf  Server `json:"booking"`
 }
 
 type GRPCServer struct {
 	CustomerGRPCConf Server `json:"customer"`
+	PlaneGRPCConf    Server `json:"plane"`
 	FlightGRPCConf   Server `json:"flight"`
 	BookingGRPCConf  Server `json:"booking"`
 }

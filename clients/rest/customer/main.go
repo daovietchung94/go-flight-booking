@@ -34,9 +34,7 @@ func main() {
 	}
 
 	//Create grpc client connect
-	customerConn, err := grpc.Dial(conf.GRPCConf.CustomerGRPCConf.Host+
-		":"+
-		conf.GRPCConf.CustomerGRPCConf.Port, grpc.WithInsecure())
+	customerConn, err := grpc.Dial(conf.GRPCConf.CustomerGRPCConf.Host+":"+conf.GRPCConf.CustomerGRPCConf.Port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,9 +51,8 @@ func main() {
 	gr := g.Group("/api/customers")
 	gr.POST("", h.CreateCustomer)
 	gr.PUT("/:id", h.UpdateCustomer)
+	gr.GET("/:id", h.CustomerDetails)
 	gr.PUT("/change-password", h.ChangeCustomerPassword)
 	//Listen and serve
-	http.ListenAndServe(conf.ServerConf.CustomerApiConf.Host+
-		":"+
-		conf.ServerConf.CustomerApiConf.Port, g)
+	http.ListenAndServe(conf.ServerConf.CustomerApiConf.Host+":"+conf.ServerConf.CustomerApiConf.Port, g)
 }

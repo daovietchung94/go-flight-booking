@@ -27,3 +27,7 @@ type ChangeCustomerPasswordRequest struct {
 	OldPassword string
 	NewPassword string
 }
+
+type FindCustomerRequest struct {
+	Id string
+}

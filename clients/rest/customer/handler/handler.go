@@ -14,6 +14,7 @@ import (
 type ICustomerApiHandler interface {
 	CreateCustomer(c *gin.Context)
 	UpdateCustomer(c *gin.Context)
+	CustomerDetails(c *gin.Context)
 	ChangeCustomerPassword(c *gin.Context)
 }
 
@@ -172,6 +173,39 @@ func (h *CustomerApiHandler) UpdateCustomer(c *gin.Context) {
 		"payload": dto,
 	})
 
+}
+
+func (h *CustomerApiHandler) CustomerDetails(c *gin.Context) {
+	req := request.FindCustomerRequest{
+		Id: c.Param("id"),
+	}
+	pReq := &pb.FindCustomerRequest{}
+	err := copier.Copy(&pReq, req)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusText(http.StatusInternalServerError),
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	pRes, err := h.myCustomerClient.CustomerDetails(c.Request.Context(), pReq)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusText(http.StatusInternalServerError),
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	dto := &response.Customer{}
+	err = copier.Copy(dto, pRes)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusText(http.StatusOK),
+		"payload": dto,
+	})
 }
 func (h *CustomerApiHandler) ChangeCustomerPassword(c *gin.Context) {
 	req := request.ChangeCustomerPasswordRequest{}

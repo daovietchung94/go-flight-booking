@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go-training/grpc/customer/models"
 	"go-training/grpc/customer/requests"
 
@@ -78,6 +79,7 @@ func (conn *dbmanager) UpdateCustomerPassword(context context.Context, req *requ
 }
 
 func (conn *dbmanager) CustomerDetails(context context.Context, id uuid.UUID) (*models.Customer, error) {
+	fmt.Println(id)
 	cs := &models.Customer{}
 	err := conn.First(&models.Customer{Id: id}).Find(&cs).Error
 
