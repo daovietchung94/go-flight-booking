@@ -3,27 +3,70 @@ package main
 import (
 	"go-training/clients/graph/generated"
 	"go-training/clients/graph/resolver"
-	"log"
+	"go-training/config"
+	log "go-training/logger"
+	"go-training/pb"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"google.golang.org/grpc"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-const defaultPort = "8080"
+var (
+	configPath = kingpin.Flag("config", "Location of config.json.").Default("./config.json").String()
+)
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
+	// Parse the CLI flags and load the config
+	kingpin.CommandLine.HelpFlag.Short('h')
+	kingpin.Parse()
+
+	// Load the config
+	conf, err := config.LoadConfig(*configPath)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
+	err = log.Setup(conf.Logging, "graphql")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Create grpc client connect
+	customerConn, err := grpc.Dial(conf.GRPCConf.CustomerGRPCConf.Host+":"+conf.GRPCConf.CustomerGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	planeConn, err := grpc.Dial(conf.GRPCConf.PlaneGRPCConf.Host+":"+conf.GRPCConf.PlaneGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	flightConn, err := grpc.Dial(conf.GRPCConf.FlightGRPCConf.Host+":"+conf.GRPCConf.FlightGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Singleton
+	customerServiceClient := pb.NewMyCustomerClient(customerConn)
+	planeServiceClient := pb.NewMyPlaneClient(planeConn)
+	flightServiceClient := pb.NewMyFlightClient(flightConn)
+
+	graphConf := generated.Config{
+		Resolvers: &resolver.Resolver{
+			MyCustomerClient: customerServiceClient,
+			MyPlaneClient:    planeServiceClient,
+			MyFlightClient:   flightServiceClient,
+		},
+	}
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graphConf))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Infof("connect to http://localhost:%s/ for GraphQL playground", conf.GraphConf.Port)
+	log.Fatal(http.ListenAndServe(":"+conf.GraphConf.Port, nil))
 }

@@ -22,9 +22,5 @@ func (h *CustomerHandler) CustomerDetails(ctx context.Context, m *pb.FindCustome
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	return c.ToPBModel(), nil
 }

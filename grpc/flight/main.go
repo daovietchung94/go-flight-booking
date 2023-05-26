@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"go-training/config"
 	"go-training/grpc/flight/handlers"
 	"go-training/grpc/flight/repository"
 	"go-training/pb"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	log "go-training/logger"
 
@@ -20,6 +24,7 @@ var (
 )
 
 func main() {
+	ctx := context.Background()
 	// Parse the CLI flags and load the config
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
@@ -56,6 +61,21 @@ func main() {
 	reflection.Register(server)
 	pb.RegisterMyFlightServer(server, handler)
 
-	log.Infof("Flight GRPC Server is listening on port: %v", conf.GRPCConf.FlightGRPCConf.Port)
-	log.Fatal(server.Serve(listen))
+	go func() {
+		log.Infof("GRPC Server is listening on port: %v", conf.GRPCConf.FlightGRPCConf.Port)
+		log.Fatal(server.Serve(listen))
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	select {
+	case v := <-c:
+		log.Errorf("signal.Notify: %v", v)
+	case done := <-ctx.Done():
+		log.Errorf("ctx.Done: %v", done)
+	}
+
+	server.GracefulStop()
+	log.Info("Server Exited Properly")
 }

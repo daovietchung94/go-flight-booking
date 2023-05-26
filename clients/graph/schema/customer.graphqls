@@ -1,0 +1,17 @@
+type Customer {
+  id: ID!
+  name: String!
+  date_of_birth: Time!
+  address: String!
+  email: String!
+}
+
+input NewCustomer {
+  name: String!
+  date_of_birth: String!
+  address: String!
+  email: String!
+  password: String!
+}
+
+scalar Time

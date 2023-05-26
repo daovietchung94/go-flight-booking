@@ -4,6 +4,7 @@ package proto;
 option go_package = "./;pb";
 
 service MyPlane {
+    rpc GetPlanes(GetPlanesRequest) returns (GetPlanesResponse);
     rpc CreatePlane(Plane) returns (Plane);
     rpc UpdatePlane(Plane) returns (Plane);
     rpc PlaneDetails(FindPlaneRequest) returns (Plane);
@@ -12,8 +13,16 @@ service MyPlane {
 message Plane {
     string id = 1;
     string number = 2;
-    int32 num_of_seats = 3;
+    int32 numOfSeats = 3;
     string status = 4;
+}
+message GetPlanesRequest {
+    int32 pageIndex = 1;
+    int32 pageSize = 2;
+}
+message GetPlanesResponse {
+    int32 total = 1;
+    repeated Plane planes = 2;
 }
 
 message FindPlaneRequest {

@@ -1,0 +1,18 @@
+type Plane {
+    id: ID!
+    number: String!
+    num_of_seats: Int!
+    status: PlaneStatus!
+}
+
+input CreatePlaneRequest {
+    number: String!
+    num_of_seats: Int!
+    status: PlaneStatus!
+}
+
+enum PlaneStatus {
+    CLEANING,
+    REPAIRING,
+    READY
+}

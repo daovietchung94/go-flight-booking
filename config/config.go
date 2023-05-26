@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Logging    *log.Config `json:"logging"`
+	GraphConf  Server      `json:"graph"`
 	ServerConf ApiServer   `json:"api"`
 	GRPCConf   GRPCServer  `json:"grpc"`
 }

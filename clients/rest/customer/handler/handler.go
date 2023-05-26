@@ -57,19 +57,11 @@ func (h *CustomerApiHandler) CreateCustomer(c *gin.Context) {
 		})
 		return
 	}
-	// dob, err := time.Parse(time.RFC3339, c.Param("date_of_birth"))
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-	// 		"status": http.StatusText(http.StatusInternalServerError),
-	// 		"error":  err.Error(),
-	// 	})
-	// 	return
-	// }
 
 	pReq.DateOfBirth = &pb.Date{
-		Year:  1990,
-		Month: 10,
-		Day:   10,
+		Year:  int32(req.DoB.Year()),
+		Month: int32(req.DoB.Month()),
+		Day:   int32(req.DoB.Day()),
 	}
 
 	pRes, err := h.myCustomerClient.CreateCustomer(c.Request.Context(), pReq)
@@ -201,6 +193,13 @@ func (h *CustomerApiHandler) CustomerDetails(c *gin.Context) {
 
 	dto := &response.Customer{}
 	err = copier.Copy(dto, pRes)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusText(http.StatusInternalServerError),
+			"error":  err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusText(http.StatusOK),

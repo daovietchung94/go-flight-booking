@@ -9,16 +9,58 @@ import (
 	"fmt"
 	"go-training/clients/graph/generated"
 	"go-training/clients/graph/model"
+	"go-training/pb"
+	"time"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateCustomer is the resolver for the createCustomer field.
+func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.NewCustomer) (*model.Customer, error) {
+	pReq := &pb.Customer{
+		Name:    input.Name,
+		Address: input.Address,
+		Email:   input.Email,
+		DateOfBirth: &pb.Date{
+			Year:  1990,
+			Month: 10,
+			Day:   10,
+		},
+		Password: input.Password,
+	}
+
+	pRes, err := r.MyCustomerClient.CreateCustomer(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Customer{
+		ID:          pRes.Id,
+		Name:        pRes.Name,
+		Address:     pRes.Address,
+		Email:       pRes.Email,
+		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+	}
+
+	return dto, nil
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// Customer is the resolver for the customer field.
+func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
+	pReq := &pb.FindCustomerRequest{
+		Id: id,
+	}
+	pRes, err := r.MyCustomerClient.CustomerDetails(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Customer{
+		ID:          pRes.Id,
+		Name:        pRes.Name,
+		Address:     pRes.Address,
+		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+	}
+
+	return dto, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

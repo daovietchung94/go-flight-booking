@@ -29,9 +29,5 @@ func (h *CustomerHandler) ChangeCustomerPassword(ctx context.Context, m *pb.Chan
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	return &pb.Empty{}, nil
 }

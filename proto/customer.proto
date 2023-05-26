@@ -6,13 +6,6 @@ option go_package = "./;pb";
 import "empty.proto";
 import "date.proto";
 
-service MyCustomer {
-    rpc CreateCustomer(Customer) returns (Customer);
-    rpc UpdateCustomer(Customer) returns (Customer);
-    rpc CustomerDetails(FindCustomerRequest) returns (Customer);
-    rpc ChangeCustomerPassword(ChangeCustomerPasswordRequest) returns (Empty);
-}
-
 message Customer {
     string id = 1;
     string name = 2;
@@ -32,3 +25,9 @@ message FindCustomerRequest {
     string id = 1;
 }
 
+service MyCustomer {
+    rpc CreateCustomer(Customer) returns (Customer);
+    rpc UpdateCustomer(Customer) returns (Customer);
+    rpc CustomerDetails(FindCustomerRequest) returns (Customer);
+    rpc ChangeCustomerPassword(ChangeCustomerPasswordRequest) returns (Empty);
+}
