@@ -53,20 +53,40 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 	}
 
+	GetPlanesResponse struct {
+		Limit      func(childComplexity int) int
+		Page       func(childComplexity int) int
+		Rows       func(childComplexity int) int
+		Sort       func(childComplexity int) int
+		TotalPages func(childComplexity int) int
+		TotalRows  func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateCustomer func(childComplexity int, input model.NewCustomer) int
+		CreatePlane    func(childComplexity int, input model.CreatePlaneRequest) int
+	}
+
+	Plane struct {
+		ID         func(childComplexity int) int
+		NumOfSeats func(childComplexity int) int
+		Number     func(childComplexity int) int
+		Status     func(childComplexity int) int
 	}
 
 	Query struct {
-		Customer func(childComplexity int, id string) int
+		Customer  func(childComplexity int, id string) int
+		GetPlanes func(childComplexity int, input model.GetPlanesRequest) int
 	}
 }
 
 type MutationResolver interface {
 	CreateCustomer(ctx context.Context, input model.NewCustomer) (*model.Customer, error)
+	CreatePlane(ctx context.Context, input model.CreatePlaneRequest) (*model.Plane, error)
 }
 type QueryResolver interface {
 	Customer(ctx context.Context, id string) (*model.Customer, error)
+	GetPlanes(ctx context.Context, input model.GetPlanesRequest) (*model.GetPlanesResponse, error)
 }
 
 type executableSchema struct {
@@ -119,6 +139,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Customer.Name(childComplexity), true
 
+	case "GetPlanesResponse.limit":
+		if e.complexity.GetPlanesResponse.Limit == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.Limit(childComplexity), true
+
+	case "GetPlanesResponse.page":
+		if e.complexity.GetPlanesResponse.Page == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.Page(childComplexity), true
+
+	case "GetPlanesResponse.rows":
+		if e.complexity.GetPlanesResponse.Rows == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.Rows(childComplexity), true
+
+	case "GetPlanesResponse.sort":
+		if e.complexity.GetPlanesResponse.Sort == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.Sort(childComplexity), true
+
+	case "GetPlanesResponse.totalPages":
+		if e.complexity.GetPlanesResponse.TotalPages == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.TotalPages(childComplexity), true
+
+	case "GetPlanesResponse.totalRows":
+		if e.complexity.GetPlanesResponse.TotalRows == nil {
+			break
+		}
+
+		return e.complexity.GetPlanesResponse.TotalRows(childComplexity), true
+
 	case "Mutation.createCustomer":
 		if e.complexity.Mutation.CreateCustomer == nil {
 			break
@@ -130,6 +192,46 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateCustomer(childComplexity, args["input"].(model.NewCustomer)), true
+
+	case "Mutation.createPlane":
+		if e.complexity.Mutation.CreatePlane == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPlane_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePlane(childComplexity, args["input"].(model.CreatePlaneRequest)), true
+
+	case "Plane.id":
+		if e.complexity.Plane.ID == nil {
+			break
+		}
+
+		return e.complexity.Plane.ID(childComplexity), true
+
+	case "Plane.numOfSeats":
+		if e.complexity.Plane.NumOfSeats == nil {
+			break
+		}
+
+		return e.complexity.Plane.NumOfSeats(childComplexity), true
+
+	case "Plane.number":
+		if e.complexity.Plane.Number == nil {
+			break
+		}
+
+		return e.complexity.Plane.Number(childComplexity), true
+
+	case "Plane.status":
+		if e.complexity.Plane.Status == nil {
+			break
+		}
+
+		return e.complexity.Plane.Status(childComplexity), true
 
 	case "Query.customer":
 		if e.complexity.Query.Customer == nil {
@@ -143,6 +245,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Customer(childComplexity, args["id"].(string)), true
 
+	case "Query.getPlanes":
+		if e.complexity.Query.GetPlanes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getPlanes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetPlanes(childComplexity, args["input"].(model.GetPlanesRequest)), true
+
 	}
 	return 0, false
 }
@@ -151,6 +265,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreatePlaneRequest,
+		ec.unmarshalInputGetPlanesRequest,
 		ec.unmarshalInputNewCustomer,
 	)
 	first := true
@@ -230,12 +346,47 @@ input NewCustomer {
 
 scalar Time
 `, BuiltIn: false},
+	{Name: "../schema/plane.graphqls", Input: `type Plane {
+    id: ID!
+    number: String!
+    numOfSeats: Int!
+    status: PlaneStatus!
+}
+
+input GetPlanesRequest {
+    page: Int!
+    limit: Int!
+    sort: String!
+}
+
+type GetPlanesResponse {
+    page: Int!
+    limit: Int!
+    sort: String!
+    totalRows: Int!
+    totalPages: Int!
+    rows: [Plane!]
+}
+
+input CreatePlaneRequest {
+    number: String!
+    numOfSeats: Int!
+    status: PlaneStatus!
+}
+
+enum PlaneStatus {
+    CLEANING,
+    REPAIRING,
+    READY
+}`, BuiltIn: false},
 	{Name: "../schema/schema.graphqls", Input: `type Query {
   customer(id: ID!): Customer!
+  getPlanes(input: GetPlanesRequest!): GetPlanesResponse!
 }
 
 type Mutation {
   createCustomer(input: NewCustomer!): Customer!
+  createPlane(input: CreatePlaneRequest!): Plane!
 }
 `, BuiltIn: false},
 }
@@ -252,6 +403,21 @@ func (ec *executionContext) field_Mutation_createCustomer_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewCustomer2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐNewCustomer(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createPlane_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreatePlaneRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreatePlaneRequest2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐCreatePlaneRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -287,6 +453,21 @@ func (ec *executionContext) field_Query_customer_args(ctx context.Context, rawAr
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getPlanes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.GetPlanesRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetPlanesRequest2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐGetPlanesRequest(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -548,6 +729,277 @@ func (ec *executionContext) fieldContext_Customer_email(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _GetPlanesResponse_page(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_page(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Page, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_page(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetPlanesResponse_limit(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_limit(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Limit, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_limit(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetPlanesResponse_sort(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_sort(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Sort, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_sort(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetPlanesResponse_totalRows(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_totalRows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalRows, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_totalRows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetPlanesResponse_totalPages(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_totalPages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPages, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_totalPages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetPlanesResponse_rows(ctx context.Context, field graphql.CollectedField, obj *model.GetPlanesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetPlanesResponse_rows(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rows, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Plane)
+	fc.Result = res
+	return ec.marshalOPlane2ᚕᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetPlanesResponse_rows(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetPlanesResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Plane_id(ctx, field)
+			case "number":
+				return ec.fieldContext_Plane_number(ctx, field)
+			case "numOfSeats":
+				return ec.fieldContext_Plane_numOfSeats(ctx, field)
+			case "status":
+				return ec.fieldContext_Plane_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Plane", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createCustomer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createCustomer(ctx, field)
 	if err != nil {
@@ -615,6 +1067,247 @@ func (ec *executionContext) fieldContext_Mutation_createCustomer(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createPlane(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createPlane(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePlane(rctx, fc.Args["input"].(model.CreatePlaneRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Plane)
+	fc.Result = res
+	return ec.marshalNPlane2ᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlane(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createPlane(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Plane_id(ctx, field)
+			case "number":
+				return ec.fieldContext_Plane_number(ctx, field)
+			case "numOfSeats":
+				return ec.fieldContext_Plane_numOfSeats(ctx, field)
+			case "status":
+				return ec.fieldContext_Plane_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Plane", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createPlane_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Plane_id(ctx context.Context, field graphql.CollectedField, obj *model.Plane) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Plane_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Plane_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Plane",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Plane_number(ctx context.Context, field graphql.CollectedField, obj *model.Plane) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Plane_number(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Number, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Plane_number(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Plane",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Plane_numOfSeats(ctx context.Context, field graphql.CollectedField, obj *model.Plane) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Plane_numOfSeats(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NumOfSeats, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Plane_numOfSeats(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Plane",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Plane_status(ctx context.Context, field graphql.CollectedField, obj *model.Plane) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Plane_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.PlaneStatus)
+	fc.Result = res
+	return ec.marshalNPlaneStatus2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Plane_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Plane",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type PlaneStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_customer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_customer(ctx, field)
 	if err != nil {
@@ -676,6 +1369,75 @@ func (ec *executionContext) fieldContext_Query_customer(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_customer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getPlanes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getPlanes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetPlanes(rctx, fc.Args["input"].(model.GetPlanesRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.GetPlanesResponse)
+	fc.Result = res
+	return ec.marshalNGetPlanesResponse2ᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐGetPlanesResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getPlanes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "page":
+				return ec.fieldContext_GetPlanesResponse_page(ctx, field)
+			case "limit":
+				return ec.fieldContext_GetPlanesResponse_limit(ctx, field)
+			case "sort":
+				return ec.fieldContext_GetPlanesResponse_sort(ctx, field)
+			case "totalRows":
+				return ec.fieldContext_GetPlanesResponse_totalRows(ctx, field)
+			case "totalPages":
+				return ec.fieldContext_GetPlanesResponse_totalPages(ctx, field)
+			case "rows":
+				return ec.fieldContext_GetPlanesResponse_rows(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GetPlanesResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getPlanes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2584,6 +3346,100 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreatePlaneRequest(ctx context.Context, obj interface{}) (model.CreatePlaneRequest, error) {
+	var it model.CreatePlaneRequest
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"number", "numOfSeats", "status"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "number":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("number"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Number = data
+		case "numOfSeats":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("numOfSeats"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NumOfSeats = data
+		case "status":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalNPlaneStatus2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneStatus(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGetPlanesRequest(ctx context.Context, obj interface{}) (model.GetPlanesRequest, error) {
+	var it model.GetPlanesRequest
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"page", "limit", "sort"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "page":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Page = data
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "sort":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Sort = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewCustomer(ctx context.Context, obj interface{}) (model.NewCustomer, error) {
 	var it model.NewCustomer
 	asMap := map[string]interface{}{}
@@ -2713,6 +3569,66 @@ func (ec *executionContext) _Customer(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var getPlanesResponseImplementors = []string{"GetPlanesResponse"}
+
+func (ec *executionContext) _GetPlanesResponse(ctx context.Context, sel ast.SelectionSet, obj *model.GetPlanesResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getPlanesResponseImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetPlanesResponse")
+		case "page":
+
+			out.Values[i] = ec._GetPlanesResponse_page(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "limit":
+
+			out.Values[i] = ec._GetPlanesResponse_limit(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sort":
+
+			out.Values[i] = ec._GetPlanesResponse_sort(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalRows":
+
+			out.Values[i] = ec._GetPlanesResponse_totalRows(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalPages":
+
+			out.Values[i] = ec._GetPlanesResponse_totalPages(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "rows":
+
+			out.Values[i] = ec._GetPlanesResponse_rows(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2737,6 +3653,64 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createCustomer(ctx, field)
 			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createPlane":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createPlane(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var planeImplementors = []string{"Plane"}
+
+func (ec *executionContext) _Plane(ctx context.Context, sel ast.SelectionSet, obj *model.Plane) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, planeImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Plane")
+		case "id":
+
+			out.Values[i] = ec._Plane_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "number":
+
+			out.Values[i] = ec._Plane_number(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "numOfSeats":
+
+			out.Values[i] = ec._Plane_numOfSeats(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+
+			out.Values[i] = ec._Plane_status(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -2781,6 +3755,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_customer(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getPlanes":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getPlanes(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3150,6 +4147,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreatePlaneRequest2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐCreatePlaneRequest(ctx context.Context, v interface{}) (model.CreatePlaneRequest, error) {
+	res, err := ec.unmarshalInputCreatePlaneRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCustomer2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐCustomer(ctx context.Context, sel ast.SelectionSet, v model.Customer) graphql.Marshaler {
 	return ec._Customer(ctx, sel, &v)
 }
@@ -3162,6 +4164,25 @@ func (ec *executionContext) marshalNCustomer2ᚖgoᚑtrainingᚋclientsᚋgraph�
 		return graphql.Null
 	}
 	return ec._Customer(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNGetPlanesRequest2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐGetPlanesRequest(ctx context.Context, v interface{}) (model.GetPlanesRequest, error) {
+	res, err := ec.unmarshalInputGetPlanesRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNGetPlanesResponse2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐGetPlanesResponse(ctx context.Context, sel ast.SelectionSet, v model.GetPlanesResponse) graphql.Marshaler {
+	return ec._GetPlanesResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGetPlanesResponse2ᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐGetPlanesResponse(ctx context.Context, sel ast.SelectionSet, v *model.GetPlanesResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GetPlanesResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
@@ -3179,9 +4200,48 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNNewCustomer2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐNewCustomer(ctx context.Context, v interface{}) (model.NewCustomer, error) {
 	res, err := ec.unmarshalInputNewCustomer(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPlane2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlane(ctx context.Context, sel ast.SelectionSet, v model.Plane) graphql.Marshaler {
+	return ec._Plane(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPlane2ᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlane(ctx context.Context, sel ast.SelectionSet, v *model.Plane) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Plane(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPlaneStatus2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneStatus(ctx context.Context, v interface{}) (model.PlaneStatus, error) {
+	var res model.PlaneStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPlaneStatus2goᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneStatus(ctx context.Context, sel ast.SelectionSet, v model.PlaneStatus) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -3491,6 +4551,53 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOPlane2ᚕᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlaneᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Plane) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPlane2ᚖgoᚑtrainingᚋclientsᚋgraphᚋmodelᚐPlane(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

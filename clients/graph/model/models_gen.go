@@ -3,8 +3,17 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
+
+type CreatePlaneRequest struct {
+	Number     string      `json:"number"`
+	NumOfSeats int         `json:"numOfSeats"`
+	Status     PlaneStatus `json:"status"`
+}
 
 type Customer struct {
 	ID          string    `json:"id"`
@@ -14,10 +23,75 @@ type Customer struct {
 	Email       string    `json:"email"`
 }
 
+type GetPlanesRequest struct {
+	Page  int    `json:"page"`
+	Limit int    `json:"limit"`
+	Sort  string `json:"sort"`
+}
+
+type GetPlanesResponse struct {
+	Page       int      `json:"page"`
+	Limit      int      `json:"limit"`
+	Sort       string   `json:"sort"`
+	TotalRows  int      `json:"totalRows"`
+	TotalPages int      `json:"totalPages"`
+	Rows       []*Plane `json:"rows,omitempty"`
+}
+
 type NewCustomer struct {
 	Name        string `json:"name"`
 	DateOfBirth string `json:"date_of_birth"`
 	Address     string `json:"address"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
+}
+
+type Plane struct {
+	ID         string      `json:"id"`
+	Number     string      `json:"number"`
+	NumOfSeats int         `json:"numOfSeats"`
+	Status     PlaneStatus `json:"status"`
+}
+
+type PlaneStatus string
+
+const (
+	PlaneStatusCleaning  PlaneStatus = "CLEANING"
+	PlaneStatusRepairing PlaneStatus = "REPAIRING"
+	PlaneStatusReady     PlaneStatus = "READY"
+)
+
+var AllPlaneStatus = []PlaneStatus{
+	PlaneStatusCleaning,
+	PlaneStatusRepairing,
+	PlaneStatusReady,
+}
+
+func (e PlaneStatus) IsValid() bool {
+	switch e {
+	case PlaneStatusCleaning, PlaneStatusRepairing, PlaneStatusReady:
+		return true
+	}
+	return false
+}
+
+func (e PlaneStatus) String() string {
+	return string(e)
+}
+
+func (e *PlaneStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PlaneStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PlaneStatus", str)
+	}
+	return nil
+}
+
+func (e PlaneStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

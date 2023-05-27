@@ -16,13 +16,20 @@ message Plane {
     int32 numOfSeats = 3;
     string status = 4;
 }
+
 message GetPlanesRequest {
-    int32 pageIndex = 1;
-    int32 pageSize = 2;
+    int32 page = 1;
+    int32 limit = 2;
+    string sort = 3;
 }
+
 message GetPlanesResponse {
-    int32 total = 1;
-    repeated Plane planes = 2;
+    int32 page = 1;
+    int32 limit = 2;
+    string sort = 3;
+    int32 totalPages = 4;
+    int32 totalRows = 5;
+    repeated Plane rows = 6;
 }
 
 message FindPlaneRequest {

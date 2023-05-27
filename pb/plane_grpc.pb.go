@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MyPlaneClient interface {
+	GetPlanes(ctx context.Context, in *GetPlanesRequest, opts ...grpc.CallOption) (*GetPlanesResponse, error)
 	CreatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error)
 	UpdatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error)
 	PlaneDetails(ctx context.Context, in *FindPlaneRequest, opts ...grpc.CallOption) (*Plane, error)
@@ -33,6 +34,15 @@ type myPlaneClient struct {
 
 func NewMyPlaneClient(cc grpc.ClientConnInterface) MyPlaneClient {
 	return &myPlaneClient{cc}
+}
+
+func (c *myPlaneClient) GetPlanes(ctx context.Context, in *GetPlanesRequest, opts ...grpc.CallOption) (*GetPlanesResponse, error) {
+	out := new(GetPlanesResponse)
+	err := c.cc.Invoke(ctx, "/proto.MyPlane/GetPlanes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *myPlaneClient) CreatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error) {
@@ -66,6 +76,7 @@ func (c *myPlaneClient) PlaneDetails(ctx context.Context, in *FindPlaneRequest, 
 // All implementations must embed UnimplementedMyPlaneServer
 // for forward compatibility
 type MyPlaneServer interface {
+	GetPlanes(context.Context, *GetPlanesRequest) (*GetPlanesResponse, error)
 	CreatePlane(context.Context, *Plane) (*Plane, error)
 	UpdatePlane(context.Context, *Plane) (*Plane, error)
 	PlaneDetails(context.Context, *FindPlaneRequest) (*Plane, error)
@@ -76,6 +87,9 @@ type MyPlaneServer interface {
 type UnimplementedMyPlaneServer struct {
 }
 
+func (UnimplementedMyPlaneServer) GetPlanes(context.Context, *GetPlanesRequest) (*GetPlanesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlanes not implemented")
+}
 func (UnimplementedMyPlaneServer) CreatePlane(context.Context, *Plane) (*Plane, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePlane not implemented")
 }
@@ -96,6 +110,24 @@ type UnsafeMyPlaneServer interface {
 
 func RegisterMyPlaneServer(s grpc.ServiceRegistrar, srv MyPlaneServer) {
 	s.RegisterService(&MyPlane_ServiceDesc, srv)
+}
+
+func _MyPlane_GetPlanes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPlanesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MyPlaneServer).GetPlanes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.MyPlane/GetPlanes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MyPlaneServer).GetPlanes(ctx, req.(*GetPlanesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _MyPlane_CreatePlane_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -159,6 +191,10 @@ var MyPlane_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.MyPlane",
 	HandlerType: (*MyPlaneServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetPlanes",
+			Handler:    _MyPlane_GetPlanes_Handler,
+		},
 		{
 			MethodName: "CreatePlane",
 			Handler:    _MyPlane_CreatePlane_Handler,

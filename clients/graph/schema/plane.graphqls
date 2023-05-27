@@ -1,13 +1,28 @@
 type Plane {
     id: ID!
     number: String!
-    num_of_seats: Int!
+    numOfSeats: Int!
     status: PlaneStatus!
+}
+
+input GetPlanesRequest {
+    page: Int!
+    limit: Int!
+    sort: String!
+}
+
+type GetPlanesResponse {
+    page: Int!
+    limit: Int!
+    sort: String!
+    totalRows: Int!
+    totalPages: Int!
+    rows: [Plane!]
 }
 
 input CreatePlaneRequest {
     number: String!
-    num_of_seats: Int!
+    numOfSeats: Int!
     status: PlaneStatus!
 }
 

@@ -43,6 +43,29 @@ func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.NewCu
 	return dto, nil
 }
 
+// CreatePlane is the resolver for the createPlane field.
+func (r *mutationResolver) CreatePlane(ctx context.Context, input model.CreatePlaneRequest) (*model.Plane, error) {
+	pReq := &pb.Plane{
+		Number:     input.Number,
+		NumOfSeats: int32(input.NumOfSeats),
+		Status:     string(input.Status),
+	}
+
+	pRes, err := r.MyPlaneClient.CreatePlane(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Plane{
+		ID:         pRes.Id,
+		Number:     pRes.Number,
+		NumOfSeats: int(pRes.NumOfSeats),
+		Status:     model.PlaneStatus(pRes.Status),
+	}
+
+	return dto, nil
+}
+
 // Customer is the resolver for the customer field.
 func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
 	pReq := &pb.FindCustomerRequest{
@@ -58,6 +81,41 @@ func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Custome
 		Name:        pRes.Name,
 		Address:     pRes.Address,
 		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+	}
+
+	return dto, nil
+}
+
+// GetPlanes is the resolver for the getPlanes field.
+func (r *queryResolver) GetPlanes(ctx context.Context, input model.GetPlanesRequest) (*model.GetPlanesResponse, error) {
+	pReq := &pb.GetPlanesRequest{
+		Page:  int32(input.Page),
+		Limit: int32(input.Limit),
+		Sort:  input.Sort,
+	}
+
+	pRes, err := r.MyPlaneClient.GetPlanes(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	planes := make([]*model.Plane, len(pRes.Rows))
+	for i, v := range pRes.Rows {
+		planes[i] = &model.Plane{
+			ID:         v.Id,
+			Number:     v.Number,
+			NumOfSeats: int(v.NumOfSeats),
+			Status:     model.PlaneStatus(v.Status),
+		}
+	}
+
+	dto := &model.GetPlanesResponse{
+		Page:       int(pRes.GetPage()),
+		Limit:      int(pRes.GetLimit()),
+		Sort:       pRes.GetSort(),
+		TotalRows:  int(pRes.GetTotalRows()),
+		TotalPages: int(pRes.GetTotalPages()),
+		Rows:       planes,
 	}
 
 	return dto, nil
