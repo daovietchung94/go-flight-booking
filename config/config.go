@@ -7,17 +7,15 @@ import (
 )
 
 type Config struct {
-	Logging    *log.Config `json:"logging"`
-	GraphConf  Server      `json:"graph"`
-	ServerConf ApiServer   `json:"api"`
-	GRPCConf   GRPCServer  `json:"grpc"`
+	Logging     *log.Config   `json:"logging"`
+	GraphQLConf GraphQLServer `json:"graphql"`
+	GRPCConf    GRPCServer    `json:"grpc"`
 }
 
-type ApiServer struct {
-	CustomerApiConf Server `json:"customer"`
-	PlaneApiConf    Server `json:"plane"`
-	FlightApiConf   Server `json:"flight"`
-	BookingApiConf  Server `json:"booking"`
+type GraphQLServer struct {
+	CustomerConf         Server `json:"customer"`
+	FlightManagerConf    Server `json:"flightManager"`
+	LogisticsManagerConf Server `json:"logisticsManager"`
 }
 
 type GRPCServer struct {

@@ -22,9 +22,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MyFlightClient interface {
-	CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
+	GetFlights(ctx context.Context, in *GetFlightsRequest, opts ...grpc.CallOption) (*GetFlightsResponse, error)
+	CreateFlight(ctx context.Context, in *CreateFlightRequest, opts ...grpc.CallOption) (*Flight, error)
 	UpdateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
-	FlightDetails(ctx context.Context, in *FindFlightRequest, opts ...grpc.CallOption) (*Flight, error)
+	FlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error)
 }
 
 type myFlightClient struct {
@@ -35,7 +36,16 @@ func NewMyFlightClient(cc grpc.ClientConnInterface) MyFlightClient {
 	return &myFlightClient{cc}
 }
 
-func (c *myFlightClient) CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error) {
+func (c *myFlightClient) GetFlights(ctx context.Context, in *GetFlightsRequest, opts ...grpc.CallOption) (*GetFlightsResponse, error) {
+	out := new(GetFlightsResponse)
+	err := c.cc.Invoke(ctx, "/proto.MyFlight/GetFlights", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *myFlightClient) CreateFlight(ctx context.Context, in *CreateFlightRequest, opts ...grpc.CallOption) (*Flight, error) {
 	out := new(Flight)
 	err := c.cc.Invoke(ctx, "/proto.MyFlight/CreateFlight", in, out, opts...)
 	if err != nil {
@@ -53,7 +63,7 @@ func (c *myFlightClient) UpdateFlight(ctx context.Context, in *Flight, opts ...g
 	return out, nil
 }
 
-func (c *myFlightClient) FlightDetails(ctx context.Context, in *FindFlightRequest, opts ...grpc.CallOption) (*Flight, error) {
+func (c *myFlightClient) FlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error) {
 	out := new(Flight)
 	err := c.cc.Invoke(ctx, "/proto.MyFlight/FlightDetails", in, out, opts...)
 	if err != nil {
@@ -66,9 +76,10 @@ func (c *myFlightClient) FlightDetails(ctx context.Context, in *FindFlightReques
 // All implementations must embed UnimplementedMyFlightServer
 // for forward compatibility
 type MyFlightServer interface {
-	CreateFlight(context.Context, *Flight) (*Flight, error)
+	GetFlights(context.Context, *GetFlightsRequest) (*GetFlightsResponse, error)
+	CreateFlight(context.Context, *CreateFlightRequest) (*Flight, error)
 	UpdateFlight(context.Context, *Flight) (*Flight, error)
-	FlightDetails(context.Context, *FindFlightRequest) (*Flight, error)
+	FlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error)
 	mustEmbedUnimplementedMyFlightServer()
 }
 
@@ -76,13 +87,16 @@ type MyFlightServer interface {
 type UnimplementedMyFlightServer struct {
 }
 
-func (UnimplementedMyFlightServer) CreateFlight(context.Context, *Flight) (*Flight, error) {
+func (UnimplementedMyFlightServer) GetFlights(context.Context, *GetFlightsRequest) (*GetFlightsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFlights not implemented")
+}
+func (UnimplementedMyFlightServer) CreateFlight(context.Context, *CreateFlightRequest) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFlight not implemented")
 }
 func (UnimplementedMyFlightServer) UpdateFlight(context.Context, *Flight) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFlight not implemented")
 }
-func (UnimplementedMyFlightServer) FlightDetails(context.Context, *FindFlightRequest) (*Flight, error) {
+func (UnimplementedMyFlightServer) FlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FlightDetails not implemented")
 }
 func (UnimplementedMyFlightServer) mustEmbedUnimplementedMyFlightServer() {}
@@ -98,8 +112,26 @@ func RegisterMyFlightServer(s grpc.ServiceRegistrar, srv MyFlightServer) {
 	s.RegisterService(&MyFlight_ServiceDesc, srv)
 }
 
+func _MyFlight_GetFlights_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFlightsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MyFlightServer).GetFlights(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.MyFlight/GetFlights",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MyFlightServer).GetFlights(ctx, req.(*GetFlightsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MyFlight_CreateFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Flight)
+	in := new(CreateFlightRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -111,7 +143,7 @@ func _MyFlight_CreateFlight_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/proto.MyFlight/CreateFlight",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MyFlightServer).CreateFlight(ctx, req.(*Flight))
+		return srv.(MyFlightServer).CreateFlight(ctx, req.(*CreateFlightRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -135,7 +167,7 @@ func _MyFlight_UpdateFlight_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _MyFlight_FlightDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindFlightRequest)
+	in := new(GetFlightDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +179,7 @@ func _MyFlight_FlightDetails_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/proto.MyFlight/FlightDetails",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MyFlightServer).FlightDetails(ctx, req.(*FindFlightRequest))
+		return srv.(MyFlightServer).FlightDetails(ctx, req.(*GetFlightDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -159,6 +191,10 @@ var MyFlight_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.MyFlight",
 	HandlerType: (*MyFlightServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetFlights",
+			Handler:    _MyFlight_GetFlights_Handler,
+		},
 		{
 			MethodName: "CreateFlight",
 			Handler:    _MyFlight_CreateFlight_Handler,

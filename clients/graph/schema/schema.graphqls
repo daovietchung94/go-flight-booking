@@ -1,9 +1,0 @@
-type Query {
-  customer(id: ID!): Customer!
-  getPlanes(input: GetPlanesRequest!): GetPlanesResponse!
-}
-
-type Mutation {
-  createCustomer(input: NewCustomer!): Customer!
-  createPlane(input: CreatePlaneRequest!): Plane!
-}

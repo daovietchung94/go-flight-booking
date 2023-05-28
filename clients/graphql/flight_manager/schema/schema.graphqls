@@ -1,0 +1,9 @@
+type Query {
+  getFlights(input: GetFlightsRequest!): GetFlightsResponse!
+}
+
+type Mutation {
+  createFlight(input: CreateFlightRequest!): Flight!
+}
+
+scalar Time

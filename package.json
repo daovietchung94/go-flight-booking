@@ -1,0 +1,16 @@
+{
+  "name": "go-flight-booking",
+  "version": "1.0.0",
+  "description": "Pratice grpc microservices with go lang",
+  "main": "gateway/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "chungdaoviet",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/gateway": "^2.4.6",
+    "apollo-server": "^3.12.0",
+    "graphql": "^16.6.0"
+  }
+}

@@ -50,3 +50,6 @@ go run grpc/customer/main.go
 ```sh
 go run clients/rest/customer/main.go
 ```
+
+go run github.com/99designs/gqlgen generate
+

@@ -40,6 +40,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	listen, err := net.Listen("tcp", conf.GRPCConf.PlaneGRPCConf.Host+":"+conf.GRPCConf.PlaneGRPCConf.Port)
 	if err != nil {
 		log.Fatal(err)
@@ -49,12 +50,18 @@ func main() {
 	)
 
 	repository, err := repository.NewDBManager()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handler, err := handlers.NewPlaneHandler(repository)
+	flightConn, err := grpc.Dial(conf.GRPCConf.FlightGRPCConf.Host+":"+conf.GRPCConf.FlightGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	flightServiceClient := pb.NewMyFlightClient(flightConn)
+
+	handler, err := handlers.NewPlaneHandler(flightServiceClient, repository)
 	if err != nil {
 		log.Fatal(err)
 	}

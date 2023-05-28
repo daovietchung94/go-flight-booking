@@ -7,9 +7,10 @@ import (
 
 type PlaneHandler struct {
 	pb.UnimplementedMyPlaneServer
+	myFlightClient  pb.MyFlightClient
 	planeRepository repository.PlaneRepository
 }
 
-func NewPlaneHandler(planeRepository repository.PlaneRepository) (*PlaneHandler, error) {
-	return &PlaneHandler{planeRepository: planeRepository}, nil
+func NewPlaneHandler(myFlightClient pb.MyFlightClient, planeRepository repository.PlaneRepository) (*PlaneHandler, error) {
+	return &PlaneHandler{planeRepository: planeRepository, myFlightClient: myFlightClient}, nil
 }

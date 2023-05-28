@@ -48,12 +48,18 @@ func main() {
 	)
 
 	flightRepository, err := repository.NewDBManager()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handler, err := handlers.NewFlightHandler(flightRepository)
+	planeConn, err := grpc.Dial(conf.GRPCConf.PlaneGRPCConf.Host+":"+conf.GRPCConf.PlaneGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	planeServiceClient := pb.NewMyPlaneClient(planeConn)
+
+	handler, err := handlers.NewFlightHandler(flightRepository, planeServiceClient)
 	if err != nil {
 		log.Fatal(err)
 	}

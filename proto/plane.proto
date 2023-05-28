@@ -5,9 +5,14 @@ option go_package = "./;pb";
 
 service MyPlane {
     rpc GetPlanes(GetPlanesRequest) returns (GetPlanesResponse);
-    rpc CreatePlane(Plane) returns (Plane);
-    rpc UpdatePlane(Plane) returns (Plane);
-    rpc PlaneDetails(FindPlaneRequest) returns (Plane);
+    rpc PlaneDetails(GetPlaneDetailsRequest) returns (Plane);
+    rpc GetPlaneStatus(GetPlaneStatusRequest) returns (Plane);
+    rpc GetPlaneByNumber(GetPlaneByNumberRequest) returns (Plane);
+
+    rpc CreatePlane(CreatePlaneRequest) returns (Plane);
+    rpc UpdatePlane(UpdatePlaneRequest) returns (Plane);
+    rpc UpdatePlaneStatus(UpdatePlaneStatusRequest) returns (Plane);
+    rpc DeletePlane(DeletePlaneRequest) returns (DeletePlaneResponse);
 }
 
 message Plane {
@@ -32,6 +37,40 @@ message GetPlanesResponse {
     repeated Plane rows = 6;
 }
 
-message FindPlaneRequest {
+message GetPlaneDetailsRequest {
     string id = 1;
+}
+
+message GetPlaneStatusRequest {
+    string id = 1;
+}
+
+message GetPlaneByNumberRequest {
+    string number = 1;
+}
+
+message CreatePlaneRequest {
+    string number = 1;
+    int32 numOfSeats = 2;
+    string status = 3;
+}
+
+message UpdatePlaneRequest {
+    string id = 1;
+    string number = 2;
+    int32 numOfSeats = 3;
+    string status = 4;
+}
+
+message UpdatePlaneStatusRequest {
+    string id = 1;
+    string status = 2;
+}
+
+message DeletePlaneRequest {
+    string id = 1;
+}
+
+message DeletePlaneResponse {
+    bool isDeleted = 1;
 }

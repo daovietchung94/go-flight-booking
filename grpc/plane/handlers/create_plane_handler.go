@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (h *PlaneHandler) CreatePlane(ctx context.Context, request *pb.Plane) (*pb.Plane, error) {
+func (h *PlaneHandler) CreatePlane(ctx context.Context, request *pb.CreatePlaneRequest) (*pb.Plane, error) {
 	req := &models.Plane{
 		Number:     request.Number,
 		NumOfSeats: request.NumOfSeats,

@@ -1,22 +1,14 @@
 {
-  "graph": {
-    "host": "127.0.0.1",
-    "port": "8080"
-  },
-  "api": {
+  "graphql": {
     "customer": {
-      "host": "127.0.0.1",
-      "port": "4000"
-    },
-    "plane": {
       "host": "127.0.0.1",
       "port": "4001"
     },
-    "flight": {
+    "flightManager": {
       "host": "127.0.0.1",
       "port": "4002"
     },
-    "booking": {
+    "logisticsManager": {
       "host": "127.0.0.1",
       "port": "4003"
     }

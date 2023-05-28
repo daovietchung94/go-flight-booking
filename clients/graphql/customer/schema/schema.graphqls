@@ -1,0 +1,8 @@
+type Query {
+  customer(id: ID!): Customer!
+
+}
+
+type Mutation {
+  createCustomer(input: NewCustomer!): Customer!
+}

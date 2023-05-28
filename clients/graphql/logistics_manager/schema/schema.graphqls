@@ -1,0 +1,11 @@
+type Query {
+  getPlanes(input: GetPlanesRequest!): GetPlanesResponse!
+  getPlaneStatus(input: GetPlaneStatusRequest!): Plane!
+}
+
+type Mutation {
+  createPlane(input: CreatePlaneRequest!): Plane!
+  updatePlane(input: UpdatePlaneRequest!): Plane!
+  updatePlaneStatus(input: UpdatePlaneStatusRequest!): Plane!
+  deletePlane(input: DeletePlaneRequest!): DeletePlaneResponse!
+}

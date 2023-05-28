@@ -6,22 +6,52 @@ option go_package = "./;pb";
 import "date.proto";
 
 service MyFlight {
-    rpc CreateFlight(Flight) returns (Flight);
+    rpc GetFlights(GetFlightsRequest) returns (GetFlightsResponse);
+    rpc CreateFlight(CreateFlightRequest) returns (Flight);
     rpc UpdateFlight(Flight) returns (Flight);
-    rpc FlightDetails(FindFlightRequest) returns (Flight);
+    rpc FlightDetails(GetFlightDetailsRequest) returns (Flight);
 }
 
 message Flight {
     string id = 1;
-    string number = 2;
-    int32 plane_id = 3;
-    int32 num_of_seats = 5;
-    string from_city = 6;
-    string to_city = 7;
-    Date dep_time = 8;
-    Date arr_time = 9;
+    string planeNumber = 2;
+    int32 numOfSeats = 3;
+    string fromCity = 4;
+    string toCity = 5;
+    Date depTime = 6;
+    Date arrTime = 7;
+    bool isLanded = 8;
 }
 
-message FindFlightRequest {
+message FlightFilter {
+    Date time = 1;
+    string city = 2;
+}
+
+message GetFlightsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string sort = 3;
+    FlightFilter filter = 4;
+}
+
+message GetFlightsResponse {
+    int32 page = 1;
+    int32 limit = 2;
+    string sort = 3;
+    int32 totalPages = 4;
+    int32 totalRows = 5;
+    repeated Flight rows = 6;
+}
+
+message CreateFlightRequest {
+    string planeNumber = 1;
+    string fromCity = 2;
+    string toCity = 3;
+    Date depTime = 4;
+    Date arrTime = 5;
+}
+
+message GetFlightDetailsRequest {
     string id = 1;
 }
