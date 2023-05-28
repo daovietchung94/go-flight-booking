@@ -309,56 +309,55 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/flight.graphqls", Input: `type Flight {
-    id: ID!
-    planeNumber: String!
-    numOfSeats: Int!
-    fromCity: String!
-    toCity: String!
-    depTime: Time!
-    arrTime: Time!
-    isLanded: Boolean!
-}
-
-input FlightFilter {
-    time: Time
-    city: String
-}
-
-input GetFlightsRequest {
-    page: Int!
-    limit: Int!
-    sort: String!
-    filter: FlightFilter
-}
-
-type GetFlightsResponse {
-    page: Int!
-    limit: Int!
-    sort: String!
-    totalRows: Int!
-    totalPages: Int!
-    rows: [Flight!]
-}
-
-input CreateFlightRequest {
-    planeNumber: String!
-    fromCity: String!
-    toCity: String!
-    depTime: Time!
-    arrTime: Time!
-}
-`, BuiltIn: false},
-	{Name: "../schema/schema.graphqls", Input: `type Query {
+	{Name: "../schema/schema.graphqls", Input: `extend type Query {
   getFlights(input: GetFlightsRequest!): GetFlightsResponse!
 }
 
-type Mutation {
+extend type Mutation {
   createFlight(input: CreateFlightRequest!): Flight!
 }
 
-scalar Time
-`, BuiltIn: false},
+type Flight {
+  id: ID!
+  planeNumber: String!
+  numOfSeats: Int!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
+  isLanded: Boolean!
+}
+
+input FlightFilter {
+  time: Time
+  city: String
+}
+
+input GetFlightsRequest {
+  page: Int!
+  limit: Int!
+  sort: String!
+  filter: FlightFilter
+}
+
+type GetFlightsResponse {
+  page: Int!
+  limit: Int!
+  sort: String!
+  totalRows: Int!
+  totalPages: Int!
+  rows: [Flight!]
+}
+
+input CreateFlightRequest {
+  planeNumber: String!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
+}
+
+scalar Time`, BuiltIn: false},
 	{Name: "../federation/directives.graphql", Input: `
 	scalar _Any
 	scalar _FieldSet

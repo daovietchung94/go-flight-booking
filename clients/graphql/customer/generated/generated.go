@@ -232,7 +232,15 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/customer.graphqls", Input: `type Customer {
+	{Name: "../schema/schema.graphqls", Input: `extend type Query {
+  customer(id: ID!): Customer!
+}
+
+type Mutation {
+  createCustomer(input: NewCustomer!): Customer!
+}
+
+type Customer {
   id: ID!
   name: String!
   date_of_birth: Time!
@@ -249,15 +257,6 @@ input NewCustomer {
 }
 
 scalar Time
-`, BuiltIn: false},
-	{Name: "../schema/schema.graphqls", Input: `type Query {
-  customer(id: ID!): Customer!
-
-}
-
-type Mutation {
-  createCustomer(input: NewCustomer!): Customer!
-}
 `, BuiltIn: false},
 	{Name: "../federation/directives.graphql", Input: `
 	scalar _Any

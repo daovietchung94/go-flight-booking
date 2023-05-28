@@ -1,8 +1,25 @@
-type Query {
+extend type Query {
   customer(id: ID!): Customer!
-
 }
 
-type Mutation {
+extend type Mutation {
   createCustomer(input: NewCustomer!): Customer!
 }
+
+type Customer {
+  id: ID!
+  name: String!
+  date_of_birth: Time!
+  address: String!
+  email: String!
+}
+
+input NewCustomer {
+  name: String!
+  date_of_birth: String!
+  address: String!
+  email: String!
+  password: String!
+}
+
+scalar Time

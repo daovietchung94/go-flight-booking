@@ -1,9 +1,49 @@
-type Query {
+extend type Query {
   getFlights(input: GetFlightsRequest!): GetFlightsResponse!
 }
 
-type Mutation {
+extend type Mutation {
   createFlight(input: CreateFlightRequest!): Flight!
+}
+
+type Flight {
+  id: ID!
+  planeNumber: String!
+  numOfSeats: Int!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
+  isLanded: Boolean!
+}
+
+input FlightFilter {
+  time: Time
+  city: String
+}
+
+input GetFlightsRequest {
+  page: Int!
+  limit: Int!
+  sort: String!
+  filter: FlightFilter
+}
+
+type GetFlightsResponse {
+  page: Int!
+  limit: Int!
+  sort: String!
+  totalRows: Int!
+  totalPages: Int!
+  rows: [Flight!]
+}
+
+input CreateFlightRequest {
+  planeNumber: String!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
 }
 
 scalar Time
