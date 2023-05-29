@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"go-training/config"
 	"go-training/database"
 	"go-training/grpc/customer/models"
 
@@ -11,8 +12,8 @@ type dbmanager struct {
 	*gorm.DB
 }
 
-func NewDBManager() (CustomerRepository, error) {
-	db, err := database.OpenDBConnection("customer")
+func NewDBManager(config *config.Config) (CustomerRepository, error) {
+	db, err := database.OpenDBConnection(config, "customer")
 
 	if err != nil {
 		return nil, err

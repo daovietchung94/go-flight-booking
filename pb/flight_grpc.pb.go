@@ -25,7 +25,7 @@ type MyFlightClient interface {
 	GetFlights(ctx context.Context, in *GetFlightsRequest, opts ...grpc.CallOption) (*GetFlightsResponse, error)
 	CreateFlight(ctx context.Context, in *CreateFlightRequest, opts ...grpc.CallOption) (*Flight, error)
 	UpdateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
-	FlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error)
+	GetFlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error)
 }
 
 type myFlightClient struct {
@@ -63,9 +63,9 @@ func (c *myFlightClient) UpdateFlight(ctx context.Context, in *Flight, opts ...g
 	return out, nil
 }
 
-func (c *myFlightClient) FlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error) {
+func (c *myFlightClient) GetFlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error) {
 	out := new(Flight)
-	err := c.cc.Invoke(ctx, "/proto.MyFlight/FlightDetails", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.MyFlight/GetFlightDetails", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ type MyFlightServer interface {
 	GetFlights(context.Context, *GetFlightsRequest) (*GetFlightsResponse, error)
 	CreateFlight(context.Context, *CreateFlightRequest) (*Flight, error)
 	UpdateFlight(context.Context, *Flight) (*Flight, error)
-	FlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error)
+	GetFlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error)
 	mustEmbedUnimplementedMyFlightServer()
 }
 
@@ -96,8 +96,8 @@ func (UnimplementedMyFlightServer) CreateFlight(context.Context, *CreateFlightRe
 func (UnimplementedMyFlightServer) UpdateFlight(context.Context, *Flight) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFlight not implemented")
 }
-func (UnimplementedMyFlightServer) FlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FlightDetails not implemented")
+func (UnimplementedMyFlightServer) GetFlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFlightDetails not implemented")
 }
 func (UnimplementedMyFlightServer) mustEmbedUnimplementedMyFlightServer() {}
 
@@ -166,20 +166,20 @@ func _MyFlight_UpdateFlight_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MyFlight_FlightDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MyFlight_GetFlightDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetFlightDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MyFlightServer).FlightDetails(ctx, in)
+		return srv.(MyFlightServer).GetFlightDetails(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.MyFlight/FlightDetails",
+		FullMethod: "/proto.MyFlight/GetFlightDetails",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MyFlightServer).FlightDetails(ctx, req.(*GetFlightDetailsRequest))
+		return srv.(MyFlightServer).GetFlightDetails(ctx, req.(*GetFlightDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -204,8 +204,8 @@ var MyFlight_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MyFlight_UpdateFlight_Handler,
 		},
 		{
-			MethodName: "FlightDetails",
-			Handler:    _MyFlight_FlightDetails_Handler,
+			MethodName: "GetFlightDetails",
+			Handler:    _MyFlight_GetFlightDetails_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

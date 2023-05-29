@@ -22,6 +22,10 @@ type DeletePlaneResponse struct {
 	IsDeleted bool `json:"isDeleted"`
 }
 
+type GetPlaneDetailsRequest struct {
+	ID string `json:"id"`
+}
+
 type GetPlaneStatusRequest struct {
 	ID string `json:"id"`
 }
@@ -47,6 +51,8 @@ type Plane struct {
 	NumOfSeats int         `json:"numOfSeats"`
 	Status     PlaneStatus `json:"status"`
 }
+
+func (Plane) IsEntity() {}
 
 type UpdatePlaneRequest struct {
 	ID         string      `json:"id"`

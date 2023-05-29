@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MyPlaneClient interface {
 	GetPlanes(ctx context.Context, in *GetPlanesRequest, opts ...grpc.CallOption) (*GetPlanesResponse, error)
-	PlaneDetails(ctx context.Context, in *GetPlaneDetailsRequest, opts ...grpc.CallOption) (*Plane, error)
+	GetPlaneDetails(ctx context.Context, in *GetPlaneDetailsRequest, opts ...grpc.CallOption) (*Plane, error)
 	GetPlaneStatus(ctx context.Context, in *GetPlaneStatusRequest, opts ...grpc.CallOption) (*Plane, error)
 	GetPlaneByNumber(ctx context.Context, in *GetPlaneByNumberRequest, opts ...grpc.CallOption) (*Plane, error)
 	CreatePlane(ctx context.Context, in *CreatePlaneRequest, opts ...grpc.CallOption) (*Plane, error)
@@ -49,9 +49,9 @@ func (c *myPlaneClient) GetPlanes(ctx context.Context, in *GetPlanesRequest, opt
 	return out, nil
 }
 
-func (c *myPlaneClient) PlaneDetails(ctx context.Context, in *GetPlaneDetailsRequest, opts ...grpc.CallOption) (*Plane, error) {
+func (c *myPlaneClient) GetPlaneDetails(ctx context.Context, in *GetPlaneDetailsRequest, opts ...grpc.CallOption) (*Plane, error) {
 	out := new(Plane)
-	err := c.cc.Invoke(ctx, "/proto.MyPlane/PlaneDetails", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.MyPlane/GetPlaneDetails", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func (c *myPlaneClient) DeletePlane(ctx context.Context, in *DeletePlaneRequest,
 // for forward compatibility
 type MyPlaneServer interface {
 	GetPlanes(context.Context, *GetPlanesRequest) (*GetPlanesResponse, error)
-	PlaneDetails(context.Context, *GetPlaneDetailsRequest) (*Plane, error)
+	GetPlaneDetails(context.Context, *GetPlaneDetailsRequest) (*Plane, error)
 	GetPlaneStatus(context.Context, *GetPlaneStatusRequest) (*Plane, error)
 	GetPlaneByNumber(context.Context, *GetPlaneByNumberRequest) (*Plane, error)
 	CreatePlane(context.Context, *CreatePlaneRequest) (*Plane, error)
@@ -134,8 +134,8 @@ type UnimplementedMyPlaneServer struct {
 func (UnimplementedMyPlaneServer) GetPlanes(context.Context, *GetPlanesRequest) (*GetPlanesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlanes not implemented")
 }
-func (UnimplementedMyPlaneServer) PlaneDetails(context.Context, *GetPlaneDetailsRequest) (*Plane, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlaneDetails not implemented")
+func (UnimplementedMyPlaneServer) GetPlaneDetails(context.Context, *GetPlaneDetailsRequest) (*Plane, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlaneDetails not implemented")
 }
 func (UnimplementedMyPlaneServer) GetPlaneStatus(context.Context, *GetPlaneStatusRequest) (*Plane, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlaneStatus not implemented")
@@ -186,20 +186,20 @@ func _MyPlane_GetPlanes_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MyPlane_PlaneDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MyPlane_GetPlaneDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPlaneDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MyPlaneServer).PlaneDetails(ctx, in)
+		return srv.(MyPlaneServer).GetPlaneDetails(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.MyPlane/PlaneDetails",
+		FullMethod: "/proto.MyPlane/GetPlaneDetails",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MyPlaneServer).PlaneDetails(ctx, req.(*GetPlaneDetailsRequest))
+		return srv.(MyPlaneServer).GetPlaneDetails(ctx, req.(*GetPlaneDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -324,8 +324,8 @@ var MyPlane_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MyPlane_GetPlanes_Handler,
 		},
 		{
-			MethodName: "PlaneDetails",
-			Handler:    _MyPlane_PlaneDetails_Handler,
+			MethodName: "GetPlaneDetails",
+			Handler:    _MyPlane_GetPlaneDetails_Handler,
 		},
 		{
 			MethodName: "GetPlaneStatus",

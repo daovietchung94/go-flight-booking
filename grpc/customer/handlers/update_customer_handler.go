@@ -12,24 +12,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (h *CustomerHandler) UpdateCustomer(ctx context.Context, m *pb.Customer) (*pb.Customer, error) {
-
+func (h *CustomerHandler) UpdateCustomer(ctx context.Context, m *pb.UpdateCustomerRequest) (*pb.Customer, error) {
 	id, err := uuid.Parse(m.Id)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	req := &models.Customer{
-		Id:      id,
-		Email:   m.Email,
-		Name:    m.Name,
-		Address: m.Address,
-		DoB:     time.Date(int(m.DateOfBirth.Year), time.Month(m.DateOfBirth.Month), int(m.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+		Id:          id,
+		Email:       m.Email,
+		Name:        m.Name,
+		Address:     m.Address,
+		DateOfBirth: time.Date(int(m.DateOfBirth.Year), time.Month(m.DateOfBirth.Month), int(m.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
 	}
 
 	c, err := h.customerRepository.UpdateCustomer(ctx, req)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

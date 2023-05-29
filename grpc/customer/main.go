@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"go-training/config"
 	"go-training/grpc/customer/handlers"
 	"go-training/grpc/customer/repository"
@@ -29,11 +30,14 @@ func main() {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
 
+	fmt.Print(*configPath)
 	// Load the config
 	conf, err := config.LoadConfig(*configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(conf)
 
 	err = log.Setup(conf.Logging, "customer_grpc")
 	if err != nil {
@@ -47,7 +51,7 @@ func main() {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer()),
 	)
 
-	customerRepository, err := repository.NewDBManager()
+	customerRepository, err := repository.NewDBManager(conf)
 
 	if err != nil {
 		log.Fatal(err)

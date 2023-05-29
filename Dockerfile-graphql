@@ -1,0 +1,11 @@
+FROM golang:1.18
+
+ARG SERVICE_NAME
+
+WORKDIR /project_graph
+
+COPY . ./
+
+RUN go build -o main ./clients/graphql/${SERVICE_NAME}/main.go
+
+CMD ["/project_graph/main", "--config=./config-docker.json"]

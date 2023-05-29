@@ -1,6 +1,78 @@
 version: "3.7"
 
 services:
+  grpc_customer:
+    build:
+      context: ./
+      dockerfile: Dockerfile-grpc
+      args:
+        SERVICE_NAME: customer
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  grpc_plane:
+    build:
+      context: ./
+      dockerfile: Dockerfile-grpc
+      args:
+        SERVICE_NAME: plane
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+  grpc_flight:
+    build:
+      context: ./
+      dockerfile: Dockerfile-grpc
+      args:
+        SERVICE_NAME: flight
+    ports:
+      - "3002:3002"
+    depends_on:
+      - db
+  graph_customer:
+    build:
+      context: ./
+      dockerfile: Dockerfile-graphql
+      args:
+        SERVICE_NAME: customer
+    ports:
+      - "4001:4001"
+    depends_on:
+      - db
+      - grpc_customer
+  graph_flight_manager:
+    build:
+      context: ./
+      dockerfile: Dockerfile-graphql
+      args:
+        SERVICE_NAME: flight_manager
+    ports:
+      - "4002:4002"
+    depends_on:
+      - db
+      - grpc_flight
+  graph_logistics_manager:
+    build:
+      context: ./
+      dockerfile: Dockerfile-graphql
+      args:
+        SERVICE_NAME: logistics_manager
+    ports:
+      - "4003:4003"
+    depends_on:
+      - db
+      - grpc_plane
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "4000:4000"
+    depends_on:
+      - graph_customer
+      - graph_logistics_manager
+      - graph_flight_manager
   db:
     image: postgres:alpine
     environment:
@@ -14,4 +86,3 @@ services:
 
 volumes:
   db_data:
-

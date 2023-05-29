@@ -1,22 +1,26 @@
 extend type Query {
-  customer(id: ID!): Customer!
+  getCustomerDetails(input: GetCustomerDetailsRequest!): Customer!
 }
 
 extend type Mutation {
-  createCustomer(input: NewCustomer!): Customer!
+  createCustomer(input: CreateCustomerRequest!): Customer!
 }
 
-type Customer {
+type Customer @key(fields: "id") {
   id: ID!
   name: String!
-  date_of_birth: Time!
+  dateOfBirth: Time!
   address: String!
   email: String!
 }
 
-input NewCustomer {
+input GetCustomerDetailsRequest {
+  id: ID!
+}
+
+input CreateCustomerRequest {
   name: String!
-  date_of_birth: String!
+  dateOfBirth: Time!
   address: String!
   email: String!
   password: String!

@@ -8,12 +8,12 @@ import (
 )
 
 type Customer struct {
-	Id       uuid.UUID
-	Email    string
-	Name     string
-	Address  string
-	DoB      time.Time `gorm:"column:date_of_birth"`
-	Password string
+	Id          uuid.UUID
+	Email       string
+	Name        string
+	Address     string
+	DateOfBirth time.Time `gorm:"column:date_of_birth"`
+	Password    string
 }
 
 func (m *Customer) ToPBModel() *pb.Customer {
@@ -21,9 +21,9 @@ func (m *Customer) ToPBModel() *pb.Customer {
 		Id:   m.Id.String(),
 		Name: m.Name,
 		DateOfBirth: &pb.Date{
-			Year:  int32(m.DoB.UTC().Year()),
-			Month: int32(m.DoB.UTC().Month()),
-			Day:   int32(m.DoB.UTC().Day()),
+			Year:  int32(m.DateOfBirth.Year()),
+			Month: int32(m.DateOfBirth.Month()),
+			Day:   int32(m.DateOfBirth.Day()),
 		},
 		Address: m.Address,
 		Email:   m.Email,

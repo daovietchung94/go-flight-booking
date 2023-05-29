@@ -9,7 +9,7 @@ service MyFlight {
     rpc GetFlights(GetFlightsRequest) returns (GetFlightsResponse);
     rpc CreateFlight(CreateFlightRequest) returns (Flight);
     rpc UpdateFlight(Flight) returns (Flight);
-    rpc FlightDetails(GetFlightDetailsRequest) returns (Flight);
+    rpc GetFlightDetails(GetFlightDetailsRequest) returns (Flight);
 }
 
 message Flight {

@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	Logging     *log.Config   `json:"logging"`
-	GraphQLConf GraphQLServer `json:"graphql"`
-	GRPCConf    GRPCServer    `json:"grpc"`
+	Logging      *log.Config    `json:"logging"`
+	GraphQLConf  GraphQLServer  `json:"graphql"`
+	GRPCConf     GRPCServer     `json:"grpc"`
+	DatabaseConf DatabaseServer `json:"database"`
 }
 
 type GraphQLServer struct {
@@ -23,6 +24,11 @@ type GRPCServer struct {
 	PlaneGRPCConf    Server `json:"plane"`
 	FlightGRPCConf   Server `json:"flight"`
 	BookingGRPCConf  Server `json:"booking"`
+}
+
+type DatabaseServer struct {
+	Host string `json:"host"`
+	Port string `json:"port"`
 }
 
 type Server struct {

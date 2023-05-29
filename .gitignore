@@ -25,3 +25,5 @@ go.work
 *.log
 
 node_modules
+
+gateway/node_modules

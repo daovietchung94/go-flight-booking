@@ -6,18 +6,24 @@ import (
 	"time"
 )
 
+type CreateCustomerRequest struct {
+	Name        string    `json:"name"`
+	DateOfBirth time.Time `json:"dateOfBirth"`
+	Address     string    `json:"address"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+}
+
 type Customer struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
-	DateOfBirth time.Time `json:"date_of_birth"`
+	DateOfBirth time.Time `json:"dateOfBirth"`
 	Address     string    `json:"address"`
 	Email       string    `json:"email"`
 }
 
-type NewCustomer struct {
-	Name        string `json:"name"`
-	DateOfBirth string `json:"date_of_birth"`
-	Address     string `json:"address"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
+func (Customer) IsEntity() {}
+
+type GetCustomerDetailsRequest struct {
+	ID string `json:"id"`
 }

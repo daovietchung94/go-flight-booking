@@ -25,6 +25,8 @@ type Flight struct {
 	IsLanded    bool      `json:"isLanded"`
 }
 
+func (Flight) IsEntity() {}
+
 type FlightFilter struct {
 	Time *time.Time `json:"time,omitempty"`
 	City *string    `json:"city,omitempty"`

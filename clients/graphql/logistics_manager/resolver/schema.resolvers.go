@@ -128,6 +128,27 @@ func (r *queryResolver) GetPlanes(ctx context.Context, input model.GetPlanesRequ
 	return dto, nil
 }
 
+// GetPlaneDetails is the resolver for the getPlaneDetails field.
+func (r *queryResolver) GetPlaneDetails(ctx context.Context, input model.GetPlaneDetailsRequest) (*model.Plane, error) {
+	pReq := &pb.GetPlaneDetailsRequest{
+		Id: input.ID,
+	}
+
+	pRes, err := r.MyPlaneClient.GetPlaneDetails(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Plane{
+		ID:         pRes.Id,
+		Number:     pRes.Number,
+		NumOfSeats: int(pRes.NumOfSeats),
+		Status:     model.PlaneStatus(pRes.Status),
+	}
+
+	return dto, nil
+}
+
 // GetPlaneStatus is the resolver for the getPlaneStatus field.
 func (r *queryResolver) GetPlaneStatus(ctx context.Context, input model.GetPlaneStatusRequest) (*model.Plane, error) {
 	pReq := &pb.GetPlaneStatusRequest{

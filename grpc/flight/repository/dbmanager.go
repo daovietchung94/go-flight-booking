@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"go-training/config"
 	"go-training/database"
 	"go-training/grpc/flight/models"
 
@@ -11,8 +12,8 @@ type dbmanager struct {
 	*gorm.DB
 }
 
-func NewDBManager() (FlightRepository, error) {
-	db, err := database.OpenDBConnection("flight")
+func NewDBManager(config *config.Config) (FlightRepository, error) {
+	db, err := database.OpenDBConnection(config, "flight")
 
 	if err != nil {
 		return nil, err

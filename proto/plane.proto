@@ -5,7 +5,7 @@ option go_package = "./;pb";
 
 service MyPlane {
     rpc GetPlanes(GetPlanesRequest) returns (GetPlanesResponse);
-    rpc PlaneDetails(GetPlaneDetailsRequest) returns (Plane);
+    rpc GetPlaneDetails(GetPlaneDetailsRequest) returns (Plane);
     rpc GetPlaneStatus(GetPlaneStatusRequest) returns (Plane);
     rpc GetPlaneByNumber(GetPlaneByNumberRequest) returns (Plane);
 

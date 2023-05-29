@@ -1,15 +1,15 @@
 {
   "graphql": {
     "customer": {
-      "host": "127.0.0.1",
+      "host": "graph_customer",
       "port": "4001"
     },
     "flightManager": {
-      "host": "127.0.0.1",
+      "host": "graph_flight_manager",
       "port": "4002"
     },
     "logisticsManager": {
-      "host": "127.0.0.1",
+      "host": "graph_logistics_manager",
       "port": "4003"
     }
   },
@@ -19,24 +19,24 @@
   },
   "grpc": {
     "customer": {
-        "host": "127.0.0.1",
+        "host": "grpc_customer",
         "port": "3000"
     },
     "plane": {
-      "host": "127.0.0.1",
+      "host": "grpc_plane",
       "port": "3001"
     },
     "flight": {
-      "host": "127.0.0.1",
+      "host": "grpc_flight",
       "port": "3002"
     },
     "booking": {
-      "host": "127.0.0.1",
+      "host": "grpc_booking",
       "port": "3003"
     }
   },
   "database": {
-    "host": "localhost",
+    "host": "db",
     "port": "5432"
   }
 }

@@ -49,7 +49,7 @@ func main() {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer()),
 	)
 
-	repository, err := repository.NewDBManager()
+	repository, err := repository.NewDBManager(conf)
 	if err != nil {
 		log.Fatal(err)
 	}

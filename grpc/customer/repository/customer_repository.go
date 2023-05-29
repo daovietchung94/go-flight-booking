@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go-training/grpc/customer/models"
 	"go-training/grpc/customer/requests"
 
@@ -19,13 +18,14 @@ type CustomerRepository interface {
 }
 
 func (conn *dbmanager) CreateCustomer(context context.Context, model *models.Customer) (*models.Customer, error) {
-	encyptPwd, err := hashPassword(model.Password)
+	model.Id = uuid.New()
+	encryptedPwd, err := hashPassword(model.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	model.Password = encyptPwd
-	model.Id = uuid.New()
+	model.Password = encryptedPwd
+
 	if err := conn.Create(model).Error; err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (conn *dbmanager) CreateCustomer(context context.Context, model *models.Cus
 }
 
 func (conn *dbmanager) UpdateCustomer(context context.Context, model *models.Customer) (*models.Customer, error) {
-	cs := []*models.Customer{}
+	var cs []*models.Customer
 	err := conn.Where(&models.Customer{Id: model.Id}).Find(&cs).Omit("password").Updates(model).Error
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (conn *dbmanager) UpdateCustomer(context context.Context, model *models.Cus
 }
 
 func (conn *dbmanager) UpdateCustomerPassword(context context.Context, req *requests.ChangeCustomerPasswordRequest) error {
-	cs := []*models.Customer{}
+	var cs []*models.Customer
 	err := conn.Where(&models.Customer{Id: req.Id}).Find(&cs).Error
 
 	if err != nil {
@@ -79,7 +79,6 @@ func (conn *dbmanager) UpdateCustomerPassword(context context.Context, req *requ
 }
 
 func (conn *dbmanager) CustomerDetails(context context.Context, id uuid.UUID) (*models.Customer, error) {
-	fmt.Println(id)
 	cs := &models.Customer{}
 	err := conn.First(&models.Customer{Id: id}).Find(&cs).Error
 

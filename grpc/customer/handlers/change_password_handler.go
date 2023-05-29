@@ -12,7 +12,6 @@ import (
 
 func (h *CustomerHandler) ChangeCustomerPassword(ctx context.Context, m *pb.ChangeCustomerPasswordRequest) (*pb.Empty, error) {
 	id, err := uuid.Parse(m.Id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +23,6 @@ func (h *CustomerHandler) ChangeCustomerPassword(ctx context.Context, m *pb.Chan
 	}
 
 	err = h.customerRepository.UpdateCustomerPassword(ctx, req)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

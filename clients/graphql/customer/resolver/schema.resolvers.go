@@ -14,16 +14,41 @@ import (
 )
 
 // CreateCustomer is the resolver for the createCustomer field.
-func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.NewCustomer) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: CreateCustomer - createCustomer"))
+func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.CreateCustomerRequest) (*model.Customer, error) {
+	pReq := &pb.CreateCustomerRequest{
+		Name: input.Name,
+		DateOfBirth: &pb.Date{
+			Year:  int32(input.DateOfBirth.Year()),
+			Month: int32(input.DateOfBirth.Month()),
+			Day:   int32(input.DateOfBirth.Day()),
+		},
+		Address:  input.Address,
+		Email:    input.Email,
+		Password: input.Password,
+	}
+
+	pRes, err := r.MyCustomerClient.CreateCustomer(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Customer{
+		ID:          pRes.Id,
+		Name:        pRes.Name,
+		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+		Address:     pRes.Address,
+		Email:       pRes.Email,
+	}
+
+	return dto, nil
 }
 
-// Customer is the resolver for the customer field.
-func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
-	pReq := &pb.FindCustomerRequest{
-		Id: id,
+// GetCustomerDetails is the resolver for the getCustomerDetails field.
+func (r *queryResolver) GetCustomerDetails(ctx context.Context, input model.GetCustomerDetailsRequest) (*model.Customer, error) {
+	pReq := &pb.GetCustomerDetailsRequest{
+		Id: input.ID,
 	}
-	pRes, err := r.MyCustomerClient.CustomerDetails(ctx, pReq)
+	pRes, err := r.MyCustomerClient.GetCustomerDetails(ctx, pReq)
 	if err != nil {
 		panic(fmt.Errorf(err.Error()))
 	}

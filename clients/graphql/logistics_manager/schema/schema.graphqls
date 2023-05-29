@@ -1,5 +1,6 @@
 extend type Query {
   getPlanes(input: GetPlanesRequest!): GetPlanesResponse!
+  getPlaneDetails(input: GetPlaneDetailsRequest!): Plane!
   getPlaneStatus(input: GetPlaneStatusRequest!): Plane!
 }
 
@@ -10,7 +11,7 @@ extend type Mutation {
   deletePlane(input: DeletePlaneRequest!): DeletePlaneResponse!
 }
 
-type Plane {
+type Plane @key(fields: "id") {
   id: ID!
   number: String!
   numOfSeats: Int!
@@ -21,6 +22,10 @@ input GetPlanesRequest {
   page: Int!
   limit: Int!
   sort: String!
+}
+
+input GetPlaneDetailsRequest {
+  id: ID!
 }
 
 type GetPlanesResponse {

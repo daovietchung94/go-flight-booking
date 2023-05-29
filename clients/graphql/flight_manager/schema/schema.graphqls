@@ -1,12 +1,12 @@
-extend type Query {
+type Query {
   getFlights(input: GetFlightsRequest!): GetFlightsResponse!
 }
 
-extend type Mutation {
+type Mutation {
   createFlight(input: CreateFlightRequest!): Flight!
 }
 
-type Flight {
+type Flight @key(fields: "id") {
   id: ID!
   planeNumber: String!
   numOfSeats: Int!
