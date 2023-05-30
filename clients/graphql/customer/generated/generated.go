@@ -56,17 +56,40 @@ type ComplexityRoot struct {
 	}
 
 	Entity struct {
-		FindCustomerByID func(childComplexity int, id string) int
+		FindCustomerByID    func(childComplexity int, id string) int
+		FindFlightByID      func(childComplexity int, id string) int
+		FindReservationByID func(childComplexity int, id string) int
+	}
+
+	Flight struct {
+		ArrTime        func(childComplexity int) int
+		AvailableSeats func(childComplexity int) int
+		DepTime        func(childComplexity int) int
+		FromCity       func(childComplexity int) int
+		ID             func(childComplexity int) int
+		PlaneNumber    func(childComplexity int) int
+		Status         func(childComplexity int) int
+		ToCity         func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateCustomer func(childComplexity int, input model.CreateCustomerRequest) int
+		CreateCustomer  func(childComplexity int, input model.CreateCustomerRequest) int
+		MakeReservation func(childComplexity int, input model.MakeReservationRequest) int
 	}
 
 	Query struct {
-		GetCustomerDetails func(childComplexity int, input model.GetCustomerDetailsRequest) int
-		__resolve__service func(childComplexity int) int
-		__resolve_entities func(childComplexity int, representations []map[string]interface{}) int
+		GetCustomerDetails    func(childComplexity int, input model.GetCustomerDetailsRequest) int
+		GetReservationDetails func(childComplexity int, input model.GetReservationDetailsRequest) int
+		__resolve__service    func(childComplexity int) int
+		__resolve_entities    func(childComplexity int, representations []map[string]interface{}) int
+	}
+
+	Reservation struct {
+		Customer        func(childComplexity int) int
+		Flight          func(childComplexity int) int
+		ID              func(childComplexity int) int
+		ReservationDate func(childComplexity int) int
+		Status          func(childComplexity int) int
 	}
 
 	_Service struct {
@@ -76,12 +99,16 @@ type ComplexityRoot struct {
 
 type EntityResolver interface {
 	FindCustomerByID(ctx context.Context, id string) (*model.Customer, error)
+	FindFlightByID(ctx context.Context, id string) (*model.Flight, error)
+	FindReservationByID(ctx context.Context, id string) (*model.Reservation, error)
 }
 type MutationResolver interface {
 	CreateCustomer(ctx context.Context, input model.CreateCustomerRequest) (*model.Customer, error)
+	MakeReservation(ctx context.Context, input model.MakeReservationRequest) (*model.Reservation, error)
 }
 type QueryResolver interface {
 	GetCustomerDetails(ctx context.Context, input model.GetCustomerDetailsRequest) (*model.Customer, error)
+	GetReservationDetails(ctx context.Context, input model.GetReservationDetailsRequest) (*model.Reservation, error)
 }
 
 type executableSchema struct {
@@ -146,6 +173,86 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Entity.FindCustomerByID(childComplexity, args["id"].(string)), true
 
+	case "Entity.findFlightByID":
+		if e.complexity.Entity.FindFlightByID == nil {
+			break
+		}
+
+		args, err := ec.field_Entity_findFlightByID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Entity.FindFlightByID(childComplexity, args["id"].(string)), true
+
+	case "Entity.findReservationByID":
+		if e.complexity.Entity.FindReservationByID == nil {
+			break
+		}
+
+		args, err := ec.field_Entity_findReservationByID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Entity.FindReservationByID(childComplexity, args["id"].(string)), true
+
+	case "Flight.arrTime":
+		if e.complexity.Flight.ArrTime == nil {
+			break
+		}
+
+		return e.complexity.Flight.ArrTime(childComplexity), true
+
+	case "Flight.availableSeats":
+		if e.complexity.Flight.AvailableSeats == nil {
+			break
+		}
+
+		return e.complexity.Flight.AvailableSeats(childComplexity), true
+
+	case "Flight.depTime":
+		if e.complexity.Flight.DepTime == nil {
+			break
+		}
+
+		return e.complexity.Flight.DepTime(childComplexity), true
+
+	case "Flight.fromCity":
+		if e.complexity.Flight.FromCity == nil {
+			break
+		}
+
+		return e.complexity.Flight.FromCity(childComplexity), true
+
+	case "Flight.id":
+		if e.complexity.Flight.ID == nil {
+			break
+		}
+
+		return e.complexity.Flight.ID(childComplexity), true
+
+	case "Flight.planeNumber":
+		if e.complexity.Flight.PlaneNumber == nil {
+			break
+		}
+
+		return e.complexity.Flight.PlaneNumber(childComplexity), true
+
+	case "Flight.status":
+		if e.complexity.Flight.Status == nil {
+			break
+		}
+
+		return e.complexity.Flight.Status(childComplexity), true
+
+	case "Flight.toCity":
+		if e.complexity.Flight.ToCity == nil {
+			break
+		}
+
+		return e.complexity.Flight.ToCity(childComplexity), true
+
 	case "Mutation.createCustomer":
 		if e.complexity.Mutation.CreateCustomer == nil {
 			break
@@ -158,6 +265,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateCustomer(childComplexity, args["input"].(model.CreateCustomerRequest)), true
 
+	case "Mutation.makeReservation":
+		if e.complexity.Mutation.MakeReservation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_makeReservation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.MakeReservation(childComplexity, args["input"].(model.MakeReservationRequest)), true
+
 	case "Query.getCustomerDetails":
 		if e.complexity.Query.GetCustomerDetails == nil {
 			break
@@ -169,6 +288,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetCustomerDetails(childComplexity, args["input"].(model.GetCustomerDetailsRequest)), true
+
+	case "Query.getReservationDetails":
+		if e.complexity.Query.GetReservationDetails == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getReservationDetails_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetReservationDetails(childComplexity, args["input"].(model.GetReservationDetailsRequest)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -189,6 +320,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.__resolve_entities(childComplexity, args["representations"].([]map[string]interface{})), true
 
+	case "Reservation.customer":
+		if e.complexity.Reservation.Customer == nil {
+			break
+		}
+
+		return e.complexity.Reservation.Customer(childComplexity), true
+
+	case "Reservation.flight":
+		if e.complexity.Reservation.Flight == nil {
+			break
+		}
+
+		return e.complexity.Reservation.Flight(childComplexity), true
+
+	case "Reservation.id":
+		if e.complexity.Reservation.ID == nil {
+			break
+		}
+
+		return e.complexity.Reservation.ID(childComplexity), true
+
+	case "Reservation.reservationDate":
+		if e.complexity.Reservation.ReservationDate == nil {
+			break
+		}
+
+		return e.complexity.Reservation.ReservationDate(childComplexity), true
+
+	case "Reservation.status":
+		if e.complexity.Reservation.Status == nil {
+			break
+		}
+
+		return e.complexity.Reservation.Status(childComplexity), true
+
 	case "_Service.sdl":
 		if e.complexity._Service.SDL == nil {
 			break
@@ -206,6 +372,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateCustomerRequest,
 		ec.unmarshalInputGetCustomerDetailsRequest,
+		ec.unmarshalInputGetReservationDetailsRequest,
+		ec.unmarshalInputMakeReservationRequest,
 	)
 	first := true
 
@@ -268,10 +436,12 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../schema/schema.graphqls", Input: `extend type Query {
   getCustomerDetails(input: GetCustomerDetailsRequest!): Customer!
+  getReservationDetails(input: GetReservationDetailsRequest!): Reservation!
 }
 
 extend type Mutation {
   createCustomer(input: CreateCustomerRequest!): Customer!
+  makeReservation(input: MakeReservationRequest!): Reservation!
 }
 
 type Customer @key(fields: "id") {
@@ -286,12 +456,40 @@ input GetCustomerDetailsRequest {
   id: ID!
 }
 
+input GetReservationDetailsRequest{
+  id: ID!
+}
+
 input CreateCustomerRequest {
   name: String!
   dateOfBirth: Time!
   address: String!
   email: String!
   password: String!
+}
+
+input MakeReservationRequest {
+  customerId: ID!
+  flightId: ID!
+}
+
+type Reservation @key(fields: "id"){
+  id: ID!
+  customer: Customer!
+  flight: Flight!
+  reservationDate: Time!
+  status: String!
+}
+
+extend type Flight @key(fields: "id") {
+  id: ID!
+  planeNumber: String!
+  availableSeats: Int!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
+  status: String!
 }
 
 scalar Time
@@ -313,11 +511,13 @@ scalar Time
 `, BuiltIn: true},
 	{Name: "../federation/entity.graphql", Input: `
 # a union of all types that use the @key directive
-union _Entity = Customer
+union _Entity = Customer | Flight | Reservation
 
 # fake type to build resolver interfaces for users to implement
 type Entity {
 		findCustomerByID(id: ID!,): Customer!
+	findFlightByID(id: ID!,): Flight!
+	findReservationByID(id: ID!,): Reservation!
 
 }
 
@@ -352,6 +552,36 @@ func (ec *executionContext) field_Entity_findCustomerByID_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Entity_findFlightByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Entity_findReservationByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createCustomer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -359,6 +589,21 @@ func (ec *executionContext) field_Mutation_createCustomer_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateCustomerRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐCreateCustomerRequest(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_makeReservation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.MakeReservationRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNMakeReservationRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐMakeReservationRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -404,6 +649,21 @@ func (ec *executionContext) field_Query_getCustomerDetails_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNGetCustomerDetailsRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐGetCustomerDetailsRequest(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getReservationDetails_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.GetReservationDetailsRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetReservationDetailsRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐGetReservationDetailsRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -737,6 +997,498 @@ func (ec *executionContext) fieldContext_Entity_findCustomerByID(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Entity_findFlightByID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Entity_findFlightByID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Entity().FindFlightByID(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Flight)
+	fc.Result = res
+	return ec.marshalNFlight2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐFlight(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Entity_findFlightByID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Entity",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Flight_id(ctx, field)
+			case "planeNumber":
+				return ec.fieldContext_Flight_planeNumber(ctx, field)
+			case "availableSeats":
+				return ec.fieldContext_Flight_availableSeats(ctx, field)
+			case "fromCity":
+				return ec.fieldContext_Flight_fromCity(ctx, field)
+			case "toCity":
+				return ec.fieldContext_Flight_toCity(ctx, field)
+			case "depTime":
+				return ec.fieldContext_Flight_depTime(ctx, field)
+			case "arrTime":
+				return ec.fieldContext_Flight_arrTime(ctx, field)
+			case "status":
+				return ec.fieldContext_Flight_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Flight", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Entity_findFlightByID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Entity_findReservationByID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Entity_findReservationByID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Entity().FindReservationByID(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Reservation)
+	fc.Result = res
+	return ec.marshalNReservation2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐReservation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Entity_findReservationByID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Entity",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Reservation_id(ctx, field)
+			case "customer":
+				return ec.fieldContext_Reservation_customer(ctx, field)
+			case "flight":
+				return ec.fieldContext_Reservation_flight(ctx, field)
+			case "reservationDate":
+				return ec.fieldContext_Reservation_reservationDate(ctx, field)
+			case "status":
+				return ec.fieldContext_Reservation_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Reservation", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Entity_findReservationByID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_id(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_planeNumber(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_planeNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlaneNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_planeNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_availableSeats(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_availableSeats(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailableSeats, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_availableSeats(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_fromCity(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_fromCity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FromCity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_fromCity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_toCity(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_toCity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ToCity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_toCity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_depTime(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_depTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DepTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_depTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_arrTime(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_arrTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArrTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_arrTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Flight_status(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Flight_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Flight",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createCustomer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createCustomer(ctx, field)
 	if err != nil {
@@ -804,6 +1556,73 @@ func (ec *executionContext) fieldContext_Mutation_createCustomer(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_makeReservation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_makeReservation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().MakeReservation(rctx, fc.Args["input"].(model.MakeReservationRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Reservation)
+	fc.Result = res
+	return ec.marshalNReservation2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐReservation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_makeReservation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Reservation_id(ctx, field)
+			case "customer":
+				return ec.fieldContext_Reservation_customer(ctx, field)
+			case "flight":
+				return ec.fieldContext_Reservation_flight(ctx, field)
+			case "reservationDate":
+				return ec.fieldContext_Reservation_reservationDate(ctx, field)
+			case "status":
+				return ec.fieldContext_Reservation_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Reservation", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_makeReservation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_getCustomerDetails(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_getCustomerDetails(ctx, field)
 	if err != nil {
@@ -865,6 +1684,73 @@ func (ec *executionContext) fieldContext_Query_getCustomerDetails(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_getCustomerDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getReservationDetails(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getReservationDetails(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetReservationDetails(rctx, fc.Args["input"].(model.GetReservationDetailsRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Reservation)
+	fc.Result = res
+	return ec.marshalNReservation2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐReservation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getReservationDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Reservation_id(ctx, field)
+			case "customer":
+				return ec.fieldContext_Reservation_customer(ctx, field)
+			case "flight":
+				return ec.fieldContext_Reservation_flight(ctx, field)
+			case "reservationDate":
+				return ec.fieldContext_Reservation_reservationDate(ctx, field)
+			case "status":
+				return ec.fieldContext_Reservation_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Reservation", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getReservationDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -1098,6 +1984,256 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Reservation_id(ctx context.Context, field graphql.CollectedField, obj *model.Reservation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Reservation_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Reservation_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Reservation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Reservation_customer(ctx context.Context, field graphql.CollectedField, obj *model.Reservation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Reservation_customer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Customer, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Customer)
+	fc.Result = res
+	return ec.marshalNCustomer2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐCustomer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Reservation_customer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Reservation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Customer_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Customer_name(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_Customer_dateOfBirth(ctx, field)
+			case "address":
+				return ec.fieldContext_Customer_address(ctx, field)
+			case "email":
+				return ec.fieldContext_Customer_email(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Customer", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Reservation_flight(ctx context.Context, field graphql.CollectedField, obj *model.Reservation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Reservation_flight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Flight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Flight)
+	fc.Result = res
+	return ec.marshalNFlight2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐFlight(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Reservation_flight(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Reservation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Flight_id(ctx, field)
+			case "planeNumber":
+				return ec.fieldContext_Flight_planeNumber(ctx, field)
+			case "availableSeats":
+				return ec.fieldContext_Flight_availableSeats(ctx, field)
+			case "fromCity":
+				return ec.fieldContext_Flight_fromCity(ctx, field)
+			case "toCity":
+				return ec.fieldContext_Flight_toCity(ctx, field)
+			case "depTime":
+				return ec.fieldContext_Flight_depTime(ctx, field)
+			case "arrTime":
+				return ec.fieldContext_Flight_arrTime(ctx, field)
+			case "status":
+				return ec.fieldContext_Flight_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Flight", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Reservation_reservationDate(ctx context.Context, field graphql.CollectedField, obj *model.Reservation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Reservation_reservationDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReservationDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Reservation_reservationDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Reservation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Reservation_status(ctx context.Context, field graphql.CollectedField, obj *model.Reservation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Reservation_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Reservation_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Reservation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3011,6 +4147,73 @@ func (ec *executionContext) unmarshalInputGetCustomerDetailsRequest(ctx context.
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputGetReservationDetailsRequest(ctx context.Context, obj interface{}) (model.GetReservationDetailsRequest, error) {
+	var it model.GetReservationDetailsRequest
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputMakeReservationRequest(ctx context.Context, obj interface{}) (model.MakeReservationRequest, error) {
+	var it model.MakeReservationRequest
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"customerId", "flightId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "customerId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customerId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CustomerID = data
+		case "flightId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("flightId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FlightID = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -3026,6 +4229,20 @@ func (ec *executionContext) __Entity(ctx context.Context, sel ast.SelectionSet, 
 			return graphql.Null
 		}
 		return ec._Customer(ctx, sel, obj)
+	case model.Flight:
+		return ec._Flight(ctx, sel, &obj)
+	case *model.Flight:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Flight(ctx, sel, obj)
+	case model.Reservation:
+		return ec._Reservation(ctx, sel, &obj)
+	case *model.Reservation:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Reservation(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -3133,6 +4350,129 @@ func (ec *executionContext) _Entity(ctx context.Context, sel ast.SelectionSet) g
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "findFlightByID":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Entity_findFlightByID(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "findReservationByID":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Entity_findReservationByID(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var flightImplementors = []string{"Flight", "_Entity"}
+
+func (ec *executionContext) _Flight(ctx context.Context, sel ast.SelectionSet, obj *model.Flight) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, flightImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Flight")
+		case "id":
+
+			out.Values[i] = ec._Flight_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "planeNumber":
+
+			out.Values[i] = ec._Flight_planeNumber(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "availableSeats":
+
+			out.Values[i] = ec._Flight_availableSeats(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "fromCity":
+
+			out.Values[i] = ec._Flight_fromCity(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "toCity":
+
+			out.Values[i] = ec._Flight_toCity(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "depTime":
+
+			out.Values[i] = ec._Flight_depTime(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "arrTime":
+
+			out.Values[i] = ec._Flight_arrTime(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+
+			out.Values[i] = ec._Flight_status(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3167,6 +4507,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createCustomer(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "makeReservation":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_makeReservation(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -3212,6 +4561,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getCustomerDetails(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getReservationDetails":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getReservationDetails(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3283,6 +4655,62 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				return ec._Query___schema(ctx, field)
 			})
 
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var reservationImplementors = []string{"Reservation", "_Entity"}
+
+func (ec *executionContext) _Reservation(ctx context.Context, sel ast.SelectionSet, obj *model.Reservation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, reservationImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Reservation")
+		case "id":
+
+			out.Values[i] = ec._Reservation_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customer":
+
+			out.Values[i] = ec._Reservation_customer(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "flight":
+
+			out.Values[i] = ec._Reservation_flight(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "reservationDate":
+
+			out.Values[i] = ec._Reservation_reservationDate(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+
+			out.Values[i] = ec._Reservation_status(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3671,8 +5099,27 @@ func (ec *executionContext) marshalNCustomer2ᚖgoᚑtrainingᚋclientsᚋgraphq
 	return ec._Customer(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNFlight2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐFlight(ctx context.Context, sel ast.SelectionSet, v model.Flight) graphql.Marshaler {
+	return ec._Flight(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFlight2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐFlight(ctx context.Context, sel ast.SelectionSet, v *model.Flight) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Flight(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNGetCustomerDetailsRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐGetCustomerDetailsRequest(ctx context.Context, v interface{}) (model.GetCustomerDetailsRequest, error) {
 	res, err := ec.unmarshalInputGetCustomerDetailsRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNGetReservationDetailsRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐGetReservationDetailsRequest(ctx context.Context, v interface{}) (model.GetReservationDetailsRequest, error) {
+	res, err := ec.unmarshalInputGetReservationDetailsRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3689,6 +5136,40 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNMakeReservationRequest2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐMakeReservationRequest(ctx context.Context, v interface{}) (model.MakeReservationRequest, error) {
+	res, err := ec.unmarshalInputMakeReservationRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNReservation2goᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐReservation(ctx context.Context, sel ast.SelectionSet, v model.Reservation) graphql.Marshaler {
+	return ec._Reservation(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNReservation2ᚖgoᚑtrainingᚋclientsᚋgraphqlᚋcustomerᚋmodelᚐReservation(ctx context.Context, sel ast.SelectionSet, v *model.Reservation) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Reservation(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

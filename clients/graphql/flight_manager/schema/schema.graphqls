@@ -9,12 +9,12 @@ type Mutation {
 type Flight @key(fields: "id") {
   id: ID!
   planeNumber: String!
-  numOfSeats: Int!
+  availableSeats: Int!
   fromCity: String!
   toCity: String!
   depTime: Time!
   arrTime: Time!
-  isLanded: Boolean!
+  status: String!
 }
 
 input FlightFilter {

@@ -52,14 +52,14 @@ type ComplexityRoot struct {
 	}
 
 	Flight struct {
-		ArrTime     func(childComplexity int) int
-		DepTime     func(childComplexity int) int
-		FromCity    func(childComplexity int) int
-		ID          func(childComplexity int) int
-		IsLanded    func(childComplexity int) int
-		NumOfSeats  func(childComplexity int) int
-		PlaneNumber func(childComplexity int) int
-		ToCity      func(childComplexity int) int
+		ArrTime        func(childComplexity int) int
+		AvailableSeats func(childComplexity int) int
+		DepTime        func(childComplexity int) int
+		FromCity       func(childComplexity int) int
+		ID             func(childComplexity int) int
+		PlaneNumber    func(childComplexity int) int
+		Status         func(childComplexity int) int
+		ToCity         func(childComplexity int) int
 	}
 
 	GetFlightsResponse struct {
@@ -130,6 +130,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Flight.ArrTime(childComplexity), true
 
+	case "Flight.availableSeats":
+		if e.complexity.Flight.AvailableSeats == nil {
+			break
+		}
+
+		return e.complexity.Flight.AvailableSeats(childComplexity), true
+
 	case "Flight.depTime":
 		if e.complexity.Flight.DepTime == nil {
 			break
@@ -151,26 +158,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Flight.ID(childComplexity), true
 
-	case "Flight.isLanded":
-		if e.complexity.Flight.IsLanded == nil {
-			break
-		}
-
-		return e.complexity.Flight.IsLanded(childComplexity), true
-
-	case "Flight.numOfSeats":
-		if e.complexity.Flight.NumOfSeats == nil {
-			break
-		}
-
-		return e.complexity.Flight.NumOfSeats(childComplexity), true
-
 	case "Flight.planeNumber":
 		if e.complexity.Flight.PlaneNumber == nil {
 			break
 		}
 
 		return e.complexity.Flight.PlaneNumber(childComplexity), true
+
+	case "Flight.status":
+		if e.complexity.Flight.Status == nil {
+			break
+		}
+
+		return e.complexity.Flight.Status(childComplexity), true
 
 	case "Flight.toCity":
 		if e.complexity.Flight.ToCity == nil {
@@ -353,12 +353,12 @@ type Mutation {
 type Flight @key(fields: "id") {
   id: ID!
   planeNumber: String!
-  numOfSeats: Int!
+  availableSeats: Int!
   fromCity: String!
   toCity: String!
   depTime: Time!
   arrTime: Time!
-  isLanded: Boolean!
+  status: String!
 }
 
 input FlightFilter {
@@ -589,8 +589,8 @@ func (ec *executionContext) fieldContext_Entity_findFlightByID(ctx context.Conte
 				return ec.fieldContext_Flight_id(ctx, field)
 			case "planeNumber":
 				return ec.fieldContext_Flight_planeNumber(ctx, field)
-			case "numOfSeats":
-				return ec.fieldContext_Flight_numOfSeats(ctx, field)
+			case "availableSeats":
+				return ec.fieldContext_Flight_availableSeats(ctx, field)
 			case "fromCity":
 				return ec.fieldContext_Flight_fromCity(ctx, field)
 			case "toCity":
@@ -599,8 +599,8 @@ func (ec *executionContext) fieldContext_Entity_findFlightByID(ctx context.Conte
 				return ec.fieldContext_Flight_depTime(ctx, field)
 			case "arrTime":
 				return ec.fieldContext_Flight_arrTime(ctx, field)
-			case "isLanded":
-				return ec.fieldContext_Flight_isLanded(ctx, field)
+			case "status":
+				return ec.fieldContext_Flight_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Flight", field.Name)
 		},
@@ -707,8 +707,8 @@ func (ec *executionContext) fieldContext_Flight_planeNumber(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Flight_numOfSeats(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Flight_numOfSeats(ctx, field)
+func (ec *executionContext) _Flight_availableSeats(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_availableSeats(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -721,7 +721,7 @@ func (ec *executionContext) _Flight_numOfSeats(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.NumOfSeats, nil
+		return obj.AvailableSeats, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -738,7 +738,7 @@ func (ec *executionContext) _Flight_numOfSeats(ctx context.Context, field graphq
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Flight_numOfSeats(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Flight_availableSeats(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Flight",
 		Field:      field,
@@ -927,8 +927,8 @@ func (ec *executionContext) fieldContext_Flight_arrTime(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Flight_isLanded(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Flight_isLanded(ctx, field)
+func (ec *executionContext) _Flight_status(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_status(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -941,7 +941,7 @@ func (ec *executionContext) _Flight_isLanded(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.IsLanded, nil
+		return obj.Status, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -953,19 +953,19 @@ func (ec *executionContext) _Flight_isLanded(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Flight_isLanded(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Flight_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Flight",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1231,8 +1231,8 @@ func (ec *executionContext) fieldContext_GetFlightsResponse_rows(ctx context.Con
 				return ec.fieldContext_Flight_id(ctx, field)
 			case "planeNumber":
 				return ec.fieldContext_Flight_planeNumber(ctx, field)
-			case "numOfSeats":
-				return ec.fieldContext_Flight_numOfSeats(ctx, field)
+			case "availableSeats":
+				return ec.fieldContext_Flight_availableSeats(ctx, field)
 			case "fromCity":
 				return ec.fieldContext_Flight_fromCity(ctx, field)
 			case "toCity":
@@ -1241,8 +1241,8 @@ func (ec *executionContext) fieldContext_GetFlightsResponse_rows(ctx context.Con
 				return ec.fieldContext_Flight_depTime(ctx, field)
 			case "arrTime":
 				return ec.fieldContext_Flight_arrTime(ctx, field)
-			case "isLanded":
-				return ec.fieldContext_Flight_isLanded(ctx, field)
+			case "status":
+				return ec.fieldContext_Flight_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Flight", field.Name)
 		},
@@ -1293,8 +1293,8 @@ func (ec *executionContext) fieldContext_Mutation_createFlight(ctx context.Conte
 				return ec.fieldContext_Flight_id(ctx, field)
 			case "planeNumber":
 				return ec.fieldContext_Flight_planeNumber(ctx, field)
-			case "numOfSeats":
-				return ec.fieldContext_Flight_numOfSeats(ctx, field)
+			case "availableSeats":
+				return ec.fieldContext_Flight_availableSeats(ctx, field)
 			case "fromCity":
 				return ec.fieldContext_Flight_fromCity(ctx, field)
 			case "toCity":
@@ -1303,8 +1303,8 @@ func (ec *executionContext) fieldContext_Mutation_createFlight(ctx context.Conte
 				return ec.fieldContext_Flight_depTime(ctx, field)
 			case "arrTime":
 				return ec.fieldContext_Flight_arrTime(ctx, field)
-			case "isLanded":
-				return ec.fieldContext_Flight_isLanded(ctx, field)
+			case "status":
+				return ec.fieldContext_Flight_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Flight", field.Name)
 		},
@@ -3698,9 +3698,9 @@ func (ec *executionContext) _Flight(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "numOfSeats":
+		case "availableSeats":
 
-			out.Values[i] = ec._Flight_numOfSeats(ctx, field, obj)
+			out.Values[i] = ec._Flight_availableSeats(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3733,9 +3733,9 @@ func (ec *executionContext) _Flight(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "isLanded":
+		case "status":
 
-			out.Values[i] = ec._Flight_isLanded(ctx, field, obj)
+			out.Values[i] = ec._Flight_status(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

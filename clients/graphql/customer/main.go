@@ -6,6 +6,7 @@ import (
 	"go-training/config"
 	log "go-training/logger"
 	"go-training/pb"
+	"go-training/pkg/rabbitmq"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -34,6 +35,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	amqpConn, err := rabbitmq.NewRabbitMQConn(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer amqpConn.Close()
+
 	//Create grpc client connect
 	customerConn, err := grpc.Dial(conf.GRPCConf.CustomerGRPCConf.Host+":"+conf.GRPCConf.CustomerGRPCConf.Port, grpc.WithInsecure())
 	if err != nil {
@@ -50,16 +57,23 @@ func main() {
 		log.Fatal(err)
 	}
 
+	bookingConn, err := grpc.Dial(conf.GRPCConf.BookingGRPCConf.Host+":"+conf.GRPCConf.BookingGRPCConf.Port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//Singleton
 	customerServiceClient := pb.NewMyCustomerClient(customerConn)
 	planeServiceClient := pb.NewMyPlaneClient(planeConn)
 	flightServiceClient := pb.NewMyFlightClient(flightConn)
+	bookingServiceClient := pb.NewMyBookingClient(bookingConn)
 
 	graphConf := generated.Config{
 		Resolvers: &resolver.Resolver{
 			MyCustomerClient: customerServiceClient,
 			MyPlaneClient:    planeServiceClient,
 			MyFlightClient:   flightServiceClient,
+			MyBookingClient:  bookingServiceClient,
 		},
 	}
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graphConf))

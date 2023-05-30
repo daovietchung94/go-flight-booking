@@ -24,6 +24,38 @@ type Customer struct {
 
 func (Customer) IsEntity() {}
 
+type Flight struct {
+	ID             string    `json:"id"`
+	PlaneNumber    string    `json:"planeNumber"`
+	AvailableSeats int       `json:"availableSeats"`
+	FromCity       string    `json:"fromCity"`
+	ToCity         string    `json:"toCity"`
+	DepTime        time.Time `json:"depTime"`
+	ArrTime        time.Time `json:"arrTime"`
+	Status         string    `json:"status"`
+}
+
+func (Flight) IsEntity() {}
+
 type GetCustomerDetailsRequest struct {
 	ID string `json:"id"`
 }
+
+type GetReservationDetailsRequest struct {
+	ID string `json:"id"`
+}
+
+type MakeReservationRequest struct {
+	CustomerID string `json:"customerId"`
+	FlightID   string `json:"flightId"`
+}
+
+type Reservation struct {
+	ID              string    `json:"id"`
+	Customer        *Customer `json:"customer"`
+	Flight          *Flight   `json:"flight"`
+	ReservationDate time.Time `json:"reservationDate"`
+	Status          string    `json:"status"`
+}
+
+func (Reservation) IsEntity() {}

@@ -83,6 +83,93 @@ func (x *Date) GetDay() int32 {
 	return 0
 }
 
+type DateTime struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Year   int32 `protobuf:"varint,1,opt,name=year,proto3" json:"year,omitempty"`
+	Month  int32 `protobuf:"varint,2,opt,name=month,proto3" json:"month,omitempty"`
+	Day    int32 `protobuf:"varint,3,opt,name=day,proto3" json:"day,omitempty"`
+	Hour   int32 `protobuf:"varint,4,opt,name=hour,proto3" json:"hour,omitempty"`
+	Minute int32 `protobuf:"varint,5,opt,name=minute,proto3" json:"minute,omitempty"`
+	Second int32 `protobuf:"varint,6,opt,name=second,proto3" json:"second,omitempty"`
+}
+
+func (x *DateTime) Reset() {
+	*x = DateTime{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_date_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DateTime) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DateTime) ProtoMessage() {}
+
+func (x *DateTime) ProtoReflect() protoreflect.Message {
+	mi := &file_date_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DateTime.ProtoReflect.Descriptor instead.
+func (*DateTime) Descriptor() ([]byte, []int) {
+	return file_date_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DateTime) GetYear() int32 {
+	if x != nil {
+		return x.Year
+	}
+	return 0
+}
+
+func (x *DateTime) GetMonth() int32 {
+	if x != nil {
+		return x.Month
+	}
+	return 0
+}
+
+func (x *DateTime) GetDay() int32 {
+	if x != nil {
+		return x.Day
+	}
+	return 0
+}
+
+func (x *DateTime) GetHour() int32 {
+	if x != nil {
+		return x.Hour
+	}
+	return 0
+}
+
+func (x *DateTime) GetMinute() int32 {
+	if x != nil {
+		return x.Minute
+	}
+	return 0
+}
+
+func (x *DateTime) GetSecond() int32 {
+	if x != nil {
+		return x.Second
+	}
+	return 0
+}
+
 var File_date_proto protoreflect.FileDescriptor
 
 var file_date_proto_rawDesc = []byte{
@@ -91,8 +178,17 @@ var file_date_proto_rawDesc = []byte{
 	0x65, 0x61, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x79, 0x65, 0x61, 0x72, 0x12,
 	0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05,
 	0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x61, 0x79, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x03, 0x64, 0x61, 0x79, 0x42, 0x07, 0x5a, 0x05, 0x2e, 0x2f, 0x3b, 0x70, 0x62,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x05, 0x52, 0x03, 0x64, 0x61, 0x79, 0x22, 0x8a, 0x01, 0x0a, 0x08, 0x44, 0x61, 0x74, 0x65,
+	0x54, 0x69, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x79, 0x65, 0x61, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x04, 0x79, 0x65, 0x61, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x6e, 0x74,
+	0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x12, 0x10,
+	0x0a, 0x03, 0x64, 0x61, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x64, 0x61, 0x79,
+	0x12, 0x12, 0x0a, 0x04, 0x68, 0x6f, 0x75, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04,
+	0x68, 0x6f, 0x75, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x69, 0x6e, 0x75, 0x74, 0x65, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6d, 0x69, 0x6e, 0x75, 0x74, 0x65, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x73, 0x65,
+	0x63, 0x6f, 0x6e, 0x64, 0x42, 0x07, 0x5a, 0x05, 0x2e, 0x2f, 0x3b, 0x70, 0x62, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -107,9 +203,10 @@ func file_date_proto_rawDescGZIP() []byte {
 	return file_date_proto_rawDescData
 }
 
-var file_date_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_date_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_date_proto_goTypes = []interface{}{
-	(*Date)(nil), // 0: proto.Date
+	(*Date)(nil),     // 0: proto.Date
+	(*DateTime)(nil), // 1: proto.DateTime
 }
 var file_date_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -137,6 +234,18 @@ func file_date_proto_init() {
 				return nil
 			}
 		}
+		file_date_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DateTime); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -144,7 +253,7 @@ func file_date_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_date_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

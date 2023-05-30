@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.31
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
+	github.com/rabbitmq/amqp091-go v1.8.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/vektah/gqlparser/v2 v2.5.1
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292

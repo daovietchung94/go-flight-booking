@@ -38,5 +38,11 @@
   "database": {
     "host": "db",
     "port": "5432"
+  },
+  "rabbitMQ": {
+    "host": "rabbitmq",
+    "port": "5672",
+    "user": "guest",
+    "password": "guest"
   }
 }

@@ -100,6 +100,46 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 				list[idx[i]] = entity
 				return nil
 			}
+		case "Flight":
+			resolverName, err := entityResolverNameForFlight(ctx, rep)
+			if err != nil {
+				return fmt.Errorf(`finding resolver for Entity "Flight": %w`, err)
+			}
+			switch resolverName {
+
+			case "findFlightByID":
+				id0, err := ec.unmarshalNID2string(ctx, rep["id"])
+				if err != nil {
+					return fmt.Errorf(`unmarshalling param 0 for findFlightByID(): %w`, err)
+				}
+				entity, err := ec.resolvers.Entity().FindFlightByID(ctx, id0)
+				if err != nil {
+					return fmt.Errorf(`resolving Entity "Flight": %w`, err)
+				}
+
+				list[idx[i]] = entity
+				return nil
+			}
+		case "Reservation":
+			resolverName, err := entityResolverNameForReservation(ctx, rep)
+			if err != nil {
+				return fmt.Errorf(`finding resolver for Entity "Reservation": %w`, err)
+			}
+			switch resolverName {
+
+			case "findReservationByID":
+				id0, err := ec.unmarshalNID2string(ctx, rep["id"])
+				if err != nil {
+					return fmt.Errorf(`unmarshalling param 0 for findReservationByID(): %w`, err)
+				}
+				entity, err := ec.resolvers.Entity().FindReservationByID(ctx, id0)
+				if err != nil {
+					return fmt.Errorf(`resolving Entity "Reservation": %w`, err)
+				}
+
+				list[idx[i]] = entity
+				return nil
+			}
 
 		}
 		return fmt.Errorf("%w: %s", ErrUnknownType, typeName)
@@ -184,4 +224,38 @@ func entityResolverNameForCustomer(ctx context.Context, rep map[string]interface
 		return "findCustomerByID", nil
 	}
 	return "", fmt.Errorf("%w for Customer", ErrTypeNotFound)
+}
+
+func entityResolverNameForFlight(ctx context.Context, rep map[string]interface{}) (string, error) {
+	for {
+		var (
+			m   map[string]interface{}
+			val interface{}
+			ok  bool
+		)
+		_ = val
+		m = rep
+		if _, ok = m["id"]; !ok {
+			break
+		}
+		return "findFlightByID", nil
+	}
+	return "", fmt.Errorf("%w for Flight", ErrTypeNotFound)
+}
+
+func entityResolverNameForReservation(ctx context.Context, rep map[string]interface{}) (string, error) {
+	for {
+		var (
+			m   map[string]interface{}
+			val interface{}
+			ok  bool
+		)
+		_ = val
+		m = rep
+		if _, ok = m["id"]; !ok {
+			break
+		}
+		return "findReservationByID", nil
+	}
+	return "", fmt.Errorf("%w for Reservation", ErrTypeNotFound)
 }

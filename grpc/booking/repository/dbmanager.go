@@ -3,19 +3,16 @@ package repository
 import (
 	"go-training/config"
 	"go-training/database"
-	"go-training/grpc/flight/models"
-	"sync"
-
+	"go-training/grpc/booking/models"
 	"gorm.io/gorm"
 )
 
 type dbmanager struct {
-	mutex sync.Mutex
-	db    *gorm.DB
+	db *gorm.DB
 }
 
-func NewDBManager(config *config.Config) (FlightRepository, error) {
-	db, err := database.OpenDBConnection(config, "flight")
+func NewDBManager(config *config.Config) (BookingRepository, error) {
+	db, err := database.OpenDBConnection(config, "booking")
 
 	if err != nil {
 		return nil, err
@@ -24,7 +21,7 @@ func NewDBManager(config *config.Config) (FlightRepository, error) {
 	db = db.Debug()
 
 	err = db.AutoMigrate(
-		&models.Flight{},
+		&models.Reservation{},
 	)
 
 	if err != nil {

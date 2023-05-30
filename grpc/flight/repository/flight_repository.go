@@ -22,7 +22,7 @@ type FlightRepository interface {
 func (conn *dbmanager) GetFlights(context context.Context, pagination pagination.Pagination) (*pagination.Pagination, error) {
 	var totalRows int64
 	var flights []*models.Flight
-	query := conn.Model(&models.Flight{}).Where("is_landed = ?", false)
+	query := conn.db.Model(&models.Flight{}).Where("is_landed = ?", false)
 	if pagination.Filter != nil {
 		filter := pagination.Filter.(*pb.FlightFilter)
 		if filter.City != "" {
@@ -54,7 +54,7 @@ func (conn *dbmanager) GetFlights(context context.Context, pagination pagination
 
 func (conn *dbmanager) CreateFlight(context context.Context, model *models.Flight) (*models.Flight, error) {
 	model.Id = uuid.New()
-	if err := conn.Create(model).Error; err != nil {
+	if err := conn.db.Create(model).Error; err != nil {
 		return nil, err
 	}
 
@@ -63,7 +63,7 @@ func (conn *dbmanager) CreateFlight(context context.Context, model *models.Fligh
 
 func (conn *dbmanager) UpdateFlight(context context.Context, model *models.Flight) (*models.Flight, error) {
 	var cs []*models.Flight
-	err := conn.Where(&models.Flight{Id: model.Id}).Find(&cs).Updates(model).Error
+	err := conn.db.Where(&models.Flight{Id: model.Id}).Find(&cs).Updates(model).Error
 	if err != nil {
 		return nil, err
 	}
@@ -77,11 +77,34 @@ func (conn *dbmanager) UpdateFlight(context context.Context, model *models.Fligh
 
 func (conn *dbmanager) FlightDetails(context context.Context, id uuid.UUID) (*models.Flight, error) {
 	cs := &models.Flight{}
-	err := conn.First(&models.Flight{Id: id}).Find(&cs).Error
+	err := conn.db.First(&models.Flight{Id: id}).Find(&cs).Error
 
 	if err != nil {
 		return nil, err
 	}
 
 	return cs, nil
+}
+
+func (conn *dbmanager) BookFlight(context context.Context, id uuid.UUID) (bool, error) {
+	conn.mutex.Lock()
+	defer conn.mutex.Unlock()
+
+	flight := models.Flight{}
+	err := conn.db.First(&models.Flight{Id: id}).Find(&flight).Error
+	if err != nil {
+		return false, err
+	}
+
+	if flight.AvailableSeats > 0 {
+		flight.AvailableSeats--
+		err = conn.db.Save(&flight).Error
+		if err != nil {
+			return false, err
+		}
+
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

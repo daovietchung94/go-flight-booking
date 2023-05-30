@@ -1,9 +1,11 @@
 extend type Query {
   getCustomerDetails(input: GetCustomerDetailsRequest!): Customer!
+  getReservationDetails(input: GetReservationDetailsRequest!): Reservation!
 }
 
 extend type Mutation {
   createCustomer(input: CreateCustomerRequest!): Customer!
+  makeReservation(input: MakeReservationRequest!): Reservation!
 }
 
 type Customer @key(fields: "id") {
@@ -18,12 +20,40 @@ input GetCustomerDetailsRequest {
   id: ID!
 }
 
+input GetReservationDetailsRequest{
+  id: ID!
+}
+
 input CreateCustomerRequest {
   name: String!
   dateOfBirth: Time!
   address: String!
   email: String!
   password: String!
+}
+
+input MakeReservationRequest {
+  customerId: ID!
+  flightId: ID!
+}
+
+type Reservation @key(fields: "id"){
+  id: ID!
+  customer: Customer!
+  flight: Flight!
+  reservationDate: Time!
+  status: String!
+}
+
+extend type Flight @key(fields: "id") {
+  id: ID!
+  planeNumber: String!
+  availableSeats: Int!
+  fromCity: String!
+  toCity: String!
+  depTime: Time!
+  arrTime: Time!
+  status: String!
 }
 
 scalar Time

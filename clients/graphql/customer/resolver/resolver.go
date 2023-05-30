@@ -10,4 +10,5 @@ type Resolver struct {
 	MyCustomerClient pb.MyCustomerClient
 	MyPlaneClient    pb.MyPlaneClient
 	MyFlightClient   pb.MyFlightClient
+	MyBookingClient  pb.MyBookingClient
 }

@@ -11,6 +11,7 @@ type Config struct {
 	GraphQLConf  GraphQLServer  `json:"graphql"`
 	GRPCConf     GRPCServer     `json:"grpc"`
 	DatabaseConf DatabaseServer `json:"database"`
+	RabbitMQ     RabbitMQ       `json:"rabbitMQ"`
 }
 
 type GraphQLServer struct {
@@ -34,6 +35,13 @@ type DatabaseServer struct {
 type Server struct {
 	Host string `json:"host"`
 	Port string `json:"port"`
+}
+
+type RabbitMQ struct {
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
 }
 
 func LoadConfig(filepath string) (*Config, error) {

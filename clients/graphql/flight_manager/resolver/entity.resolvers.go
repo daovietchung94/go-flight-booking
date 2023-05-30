@@ -18,21 +18,20 @@ func (r *entityResolver) FindFlightByID(ctx context.Context, id string) (*model.
 	pReq := &pb.GetFlightDetailsRequest{
 		Id: id,
 	}
-
 	c, err := r.MyFlightClient.GetFlightDetails(ctx, pReq)
 	if err != nil {
 		panic(fmt.Errorf(err.Error()))
 	}
 
 	dto := &model.Flight{
-		ID:          c.Id,
-		PlaneNumber: c.PlaneNumber,
-		NumOfSeats:  int(c.NumOfSeats),
-		FromCity:    c.FromCity,
-		ToCity:      c.ToCity,
-		DepTime:     time.Date(int(c.DepTime.Year), time.Month(c.DepTime.Month), int(c.DepTime.Day), 0, 0, 0, 0, time.Local),
-		ArrTime:     time.Date(int(c.ArrTime.Year), time.Month(c.ArrTime.Month), int(c.ArrTime.Day), 0, 0, 0, 0, time.Local),
-		IsLanded:    false,
+		ID:             c.Id,
+		PlaneNumber:    c.PlaneNumber,
+		AvailableSeats: int(c.AvailableSeats),
+		FromCity:       c.FromCity,
+		ToCity:         c.ToCity,
+		DepTime:        time.Date(int(c.DepTime.Year), time.Month(c.DepTime.Month), int(c.DepTime.Day), int(c.DepTime.Hour), int(c.DepTime.Minute), int(c.DepTime.Second), 0, time.Local),
+		ArrTime:        time.Date(int(c.ArrTime.Year), time.Month(c.ArrTime.Month), int(c.ArrTime.Day), int(c.ArrTime.Hour), int(c.ArrTime.Minute), int(c.ArrTime.Second), 0, time.Local),
+		Status:         c.Status,
 	}
 
 	return dto, nil

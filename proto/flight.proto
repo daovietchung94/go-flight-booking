@@ -15,16 +15,16 @@ service MyFlight {
 message Flight {
     string id = 1;
     string planeNumber = 2;
-    int32 numOfSeats = 3;
+    int32 availableSeats = 3;
     string fromCity = 4;
     string toCity = 5;
-    Date depTime = 6;
-    Date arrTime = 7;
-    bool isLanded = 8;
+    DateTime depTime = 6;
+    DateTime arrTime = 7;
+    string status = 8;
 }
 
 message FlightFilter {
-    Date time = 1;
+    DateTime time = 1;
     string city = 2;
 }
 
@@ -48,8 +48,8 @@ message CreateFlightRequest {
     string planeNumber = 1;
     string fromCity = 2;
     string toCity = 3;
-    Date depTime = 4;
-    Date arrTime = 5;
+    DateTime depTime = 4;
+    DateTime arrTime = 5;
 }
 
 message GetFlightDetailsRequest {

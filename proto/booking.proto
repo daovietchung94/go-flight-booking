@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "./;pb";
+
+import "date.proto";
+import "flight.proto";
+import "customer.proto";
+
+service MyBooking {
+  rpc CreateReservation(CreateReservationRequest) returns (Reservation);
+  rpc GetReservationDetails(GetReservationDetailsRequest) returns (Reservation);
+}
+
+message Reservation {
+  string id = 1;
+  Customer customer = 2;
+  Flight flight = 3;
+  DateTime reservationDate = 4;
+  string status = 5;
+}
+
+message CreateReservationRequest {
+  string customerId = 1;
+  string flightId = 2;
+}
+
+message GetReservationDetailsRequest{
+  string id = 1;
+}
+

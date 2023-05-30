@@ -15,14 +15,14 @@ type CreateFlightRequest struct {
 }
 
 type Flight struct {
-	ID          string    `json:"id"`
-	PlaneNumber string    `json:"planeNumber"`
-	NumOfSeats  int       `json:"numOfSeats"`
-	FromCity    string    `json:"fromCity"`
-	ToCity      string    `json:"toCity"`
-	DepTime     time.Time `json:"depTime"`
-	ArrTime     time.Time `json:"arrTime"`
-	IsLanded    bool      `json:"isLanded"`
+	ID             string    `json:"id"`
+	PlaneNumber    string    `json:"planeNumber"`
+	AvailableSeats int       `json:"availableSeats"`
+	FromCity       string    `json:"fromCity"`
+	ToCity         string    `json:"toCity"`
+	DepTime        time.Time `json:"depTime"`
+	ArrTime        time.Time `json:"arrTime"`
+	Status         string    `json:"status"`
 }
 
 func (Flight) IsEntity() {}

@@ -35,6 +35,83 @@ func (r *entityResolver) FindCustomerByID(ctx context.Context, id string) (*mode
 	return dto, nil
 }
 
+// FindFlightByID is the resolver for the findFlightByID field.
+func (r *entityResolver) FindFlightByID(ctx context.Context, id string) (*model.Flight, error) {
+	pReq := &pb.GetFlightDetailsRequest{
+		Id: id,
+	}
+
+	pRes, err := r.MyFlightClient.GetFlightDetails(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Flight{
+		ID:             pRes.Id,
+		PlaneNumber:    pRes.PlaneNumber,
+		AvailableSeats: int(pRes.AvailableSeats),
+		FromCity:       pRes.FromCity,
+		ToCity:         pRes.ToCity,
+		DepTime:        time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), 0, 0, 0, 0, time.Local),
+		ArrTime:        time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), 0, 0, 0, 0, time.Local),
+		Status:         pRes.Status,
+	}
+
+	return dto, nil
+}
+
+// FindReservationByID is the resolver for the findReservationByID field.
+func (r *entityResolver) FindReservationByID(ctx context.Context, id string) (*model.Reservation, error) {
+	pReq := &pb.GetReservationDetailsRequest{
+		Id: id,
+	}
+	pRes, err := r.MyBookingClient.GetReservationDetails(ctx, pReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	cReq := &pb.GetCustomerDetailsRequest{
+		Id: pRes.Customer.Id,
+	}
+	cRes, err := r.MyCustomerClient.GetCustomerDetails(ctx, cReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	fReq := &pb.GetFlightDetailsRequest{
+		Id: pRes.Flight.Id,
+	}
+	fRes, err := r.MyFlightClient.GetFlightDetails(ctx, fReq)
+	if err != nil {
+		panic(fmt.Errorf(err.Error()))
+	}
+
+	dto := &model.Reservation{
+		ID: pRes.Id,
+		Customer: &model.Customer{
+			ID:          cRes.Id,
+			Name:        cRes.Name,
+			DateOfBirth: time.Date(int(cRes.DateOfBirth.Year), time.Month(cRes.DateOfBirth.Month), int(cRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+			Address:     cRes.Address,
+			Email:       cRes.Email,
+		},
+		Flight: &model.Flight{
+			ID:             fRes.Id,
+			PlaneNumber:    fRes.PlaneNumber,
+			AvailableSeats: int(fRes.AvailableSeats),
+			FromCity:       fRes.FromCity,
+			ToCity:         fRes.ToCity,
+			DepTime:        time.Date(int(fRes.DepTime.Year), time.Month(fRes.DepTime.Month), int(fRes.DepTime.Day), int(fRes.DepTime.Hour), int(fRes.DepTime.Minute), int(fRes.DepTime.Second), 0, time.Local),
+			ArrTime:        time.Date(int(fRes.ArrTime.Year), time.Month(fRes.ArrTime.Month), int(fRes.ArrTime.Day), int(fRes.ArrTime.Hour), int(fRes.ArrTime.Minute), int(fRes.ArrTime.Second), 0, time.Local),
+			Status:         fRes.Status,
+		},
+		ReservationDate: time.Date(int(pRes.ReservationDate.Year), time.Month(pRes.ReservationDate.Month), int(pRes.ReservationDate.Day), int(pRes.ReservationDate.Hour), int(pRes.ReservationDate.Minute), int(pRes.ReservationDate.Second), 0, time.Local),
+		Status:          pRes.Status,
+	}
+
+	return dto, nil
+}
+
 // Entity returns generated.EntityResolver implementation.
 func (r *Resolver) Entity() generated.EntityResolver { return &entityResolver{r} }
 

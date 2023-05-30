@@ -20,15 +20,21 @@ func (r *mutationResolver) CreateFlight(ctx context.Context, input model.CreateF
 		PlaneNumber: input.PlaneNumber,
 		FromCity:    input.FromCity,
 		ToCity:      input.ToCity,
-		DepTime: &pb.Date{
-			Year:  int32(input.DepTime.Year()),
-			Month: int32(input.DepTime.Month()),
-			Day:   int32(input.DepTime.Day()),
+		DepTime: &pb.DateTime{
+			Year:   int32(input.DepTime.Year()),
+			Month:  int32(input.DepTime.Month()),
+			Day:    int32(input.DepTime.Day()),
+			Hour:   int32(input.DepTime.Hour()),
+			Minute: int32(input.DepTime.Minute()),
+			Second: int32(input.DepTime.Second()),
 		},
-		ArrTime: &pb.Date{
-			Year:  int32(input.ArrTime.Year()),
-			Month: int32(input.ArrTime.Month()),
-			Day:   int32(input.ArrTime.Day()),
+		ArrTime: &pb.DateTime{
+			Year:   int32(input.ArrTime.Year()),
+			Month:  int32(input.ArrTime.Month()),
+			Day:    int32(input.ArrTime.Day()),
+			Hour:   int32(input.ArrTime.Hour()),
+			Minute: int32(input.ArrTime.Minute()),
+			Second: int32(input.ArrTime.Second()),
 		},
 	}
 
@@ -38,14 +44,14 @@ func (r *mutationResolver) CreateFlight(ctx context.Context, input model.CreateF
 	}
 
 	dto := &model.Flight{
-		ID:          pRes.Id,
-		PlaneNumber: pRes.PlaneNumber,
-		NumOfSeats:  int(pRes.NumOfSeats),
-		FromCity:    pRes.FromCity,
-		ToCity:      pRes.ToCity,
-		DepTime:     time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), 0, 0, 0, 0, time.Local),
-		ArrTime:     time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), 0, 0, 0, 0, time.Local),
-		IsLanded:    pRes.IsLanded,
+		ID:             pRes.Id,
+		PlaneNumber:    pRes.PlaneNumber,
+		AvailableSeats: int(pRes.AvailableSeats),
+		FromCity:       pRes.FromCity,
+		ToCity:         pRes.ToCity,
+		DepTime:        time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), int(pRes.DepTime.Hour), int(pRes.DepTime.Minute), int(pRes.DepTime.Second), 0, time.Local),
+		ArrTime:        time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), int(pRes.ArrTime.Hour), int(pRes.ArrTime.Minute), int(pRes.ArrTime.Second), 0, time.Local),
+		Status:         pRes.Status,
 	}
 
 	return dto, nil
@@ -62,10 +68,13 @@ func (r *queryResolver) GetFlights(ctx context.Context, input model.GetFlightsRe
 
 	if input.Filter != nil {
 		if input.Filter.Time != nil {
-			pReq.Filter.Time = &pb.Date{
-				Year:  int32(input.Filter.Time.Year()),
-				Month: int32(input.Filter.Time.Month()),
-				Day:   int32(input.Filter.Time.Day()),
+			pReq.Filter.Time = &pb.DateTime{
+				Year:   int32(input.Filter.Time.Year()),
+				Month:  int32(input.Filter.Time.Month()),
+				Day:    int32(input.Filter.Time.Day()),
+				Hour:   int32(input.Filter.Time.Hour()),
+				Minute: int32(input.Filter.Time.Minute()),
+				Second: int32(input.Filter.Time.Second()),
 			}
 		}
 		if input.Filter.City != nil {
@@ -83,14 +92,14 @@ func (r *queryResolver) GetFlights(ctx context.Context, input model.GetFlightsRe
 	flights := make([]*model.Flight, len(pRes.Rows))
 	for i, v := range pRes.Rows {
 		flights[i] = &model.Flight{
-			ID:          v.Id,
-			PlaneNumber: v.PlaneNumber,
-			NumOfSeats:  int(v.NumOfSeats),
-			FromCity:    v.FromCity,
-			ToCity:      v.ToCity,
-			DepTime:     time.Date(int(v.DepTime.Year), time.Month(v.DepTime.Month), int(v.DepTime.Day), 0, 0, 0, 0, time.Local),
-			ArrTime:     time.Date(int(v.ArrTime.Year), time.Month(v.ArrTime.Month), int(v.ArrTime.Day), 0, 0, 0, 0, time.Local),
-			IsLanded:    v.IsLanded,
+			ID:             v.Id,
+			PlaneNumber:    v.PlaneNumber,
+			AvailableSeats: int(v.AvailableSeats),
+			FromCity:       v.FromCity,
+			ToCity:         v.ToCity,
+			DepTime:        time.Date(int(v.DepTime.Year), time.Month(v.DepTime.Month), int(v.DepTime.Day), int(v.DepTime.Hour), int(v.DepTime.Minute), int(v.DepTime.Second), 0, time.Local),
+			ArrTime:        time.Date(int(v.ArrTime.Year), time.Month(v.ArrTime.Month), int(v.ArrTime.Day), int(v.ArrTime.Hour), int(v.ArrTime.Minute), int(v.ArrTime.Second), 0, time.Local),
+			Status:         v.Status,
 		}
 	}
 
