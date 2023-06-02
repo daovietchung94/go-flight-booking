@@ -10,6 +10,7 @@ import (
 	"go-training/clients/graphql/customer/generated"
 	"go-training/clients/graphql/customer/model"
 	"go-training/pb"
+	"go-training/pkg/utils"
 	"time"
 )
 
@@ -27,7 +28,7 @@ func (r *entityResolver) FindCustomerByID(ctx context.Context, id string) (*mode
 	dto := &model.Customer{
 		ID:          pRes.Id,
 		Name:        pRes.Name,
-		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+		DateOfBirth: time.Date(int(pRes.DateOfBirth.Year), time.Month(pRes.DateOfBirth.Month), int(pRes.DateOfBirth.Day), 0, 0, 0, 0, time.UTC),
 		Address:     pRes.Address,
 		Email:       pRes.Email,
 	}
@@ -52,8 +53,8 @@ func (r *entityResolver) FindFlightByID(ctx context.Context, id string) (*model.
 		AvailableSeats: int(pRes.AvailableSeats),
 		FromCity:       pRes.FromCity,
 		ToCity:         pRes.ToCity,
-		DepTime:        time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), 0, 0, 0, 0, time.Local),
-		ArrTime:        time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), 0, 0, 0, 0, time.Local),
+		DepTime:        time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), 0, 0, 0, 0, time.UTC),
+		ArrTime:        time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), 0, 0, 0, 0, time.UTC),
 		Status:         pRes.Status,
 	}
 
@@ -91,7 +92,7 @@ func (r *entityResolver) FindReservationByID(ctx context.Context, id string) (*m
 		Customer: &model.Customer{
 			ID:          cRes.Id,
 			Name:        cRes.Name,
-			DateOfBirth: time.Date(int(cRes.DateOfBirth.Year), time.Month(cRes.DateOfBirth.Month), int(cRes.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+			DateOfBirth: time.Date(int(cRes.DateOfBirth.Year), time.Month(cRes.DateOfBirth.Month), int(cRes.DateOfBirth.Day), 0, 0, 0, 0, time.UTC),
 			Address:     cRes.Address,
 			Email:       cRes.Email,
 		},
@@ -101,11 +102,11 @@ func (r *entityResolver) FindReservationByID(ctx context.Context, id string) (*m
 			AvailableSeats: int(fRes.AvailableSeats),
 			FromCity:       fRes.FromCity,
 			ToCity:         fRes.ToCity,
-			DepTime:        time.Date(int(fRes.DepTime.Year), time.Month(fRes.DepTime.Month), int(fRes.DepTime.Day), int(fRes.DepTime.Hour), int(fRes.DepTime.Minute), int(fRes.DepTime.Second), 0, time.Local),
-			ArrTime:        time.Date(int(fRes.ArrTime.Year), time.Month(fRes.ArrTime.Month), int(fRes.ArrTime.Day), int(fRes.ArrTime.Hour), int(fRes.ArrTime.Minute), int(fRes.ArrTime.Second), 0, time.Local),
+			DepTime:        utils.ToTime(fRes.DepTime),
+			ArrTime:        utils.ToTime(fRes.ArrTime),
 			Status:         fRes.Status,
 		},
-		ReservationDate: time.Date(int(pRes.ReservationDate.Year), time.Month(pRes.ReservationDate.Month), int(pRes.ReservationDate.Day), int(pRes.ReservationDate.Hour), int(pRes.ReservationDate.Minute), int(pRes.ReservationDate.Second), 0, time.Local),
+		ReservationDate: utils.ToTime(pRes.ReservationDate),
 		Status:          pRes.Status,
 	}
 

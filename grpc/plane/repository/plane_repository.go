@@ -5,6 +5,7 @@ import (
 	"errors"
 	"go-training/grpc/plane/models"
 	"go-training/pkg/pagination"
+	"gorm.io/gorm"
 	"math"
 
 	"github.com/google/uuid"
@@ -45,7 +46,11 @@ func (conn *dbmanager) GetPlaneByNumber(context context.Context, number string) 
 
 	err := conn.Where(&models.Plane{Number: number}).First(plane).Error
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("PLANE NOT FOUND")
+		} else {
+			return nil, err
+		}
 	}
 
 	return plane, nil

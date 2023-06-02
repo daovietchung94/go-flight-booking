@@ -4,14 +4,11 @@ import (
 	"go-training/config"
 	"go-training/database"
 	"go-training/grpc/flight/models"
-	"sync"
-
 	"gorm.io/gorm"
 )
 
 type dbmanager struct {
-	mutex sync.Mutex
-	db    *gorm.DB
+	db *gorm.DB
 }
 
 func NewDBManager(config *config.Config) (FlightRepository, error) {

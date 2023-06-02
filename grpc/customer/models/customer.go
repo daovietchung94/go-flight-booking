@@ -21,9 +21,9 @@ func (m *Customer) ToPBModel() *pb.Customer {
 		Id:   m.Id.String(),
 		Name: m.Name,
 		DateOfBirth: &pb.Date{
-			Year:  int32(m.DateOfBirth.Year()),
-			Month: int32(m.DateOfBirth.Month()),
-			Day:   int32(m.DateOfBirth.Day()),
+			Year:  int32(m.DateOfBirth.UTC().Year()),
+			Month: int32(m.DateOfBirth.UTC().Month()),
+			Day:   int32(m.DateOfBirth.UTC().Day()),
 		},
 		Address: m.Address,
 		Email:   m.Email,

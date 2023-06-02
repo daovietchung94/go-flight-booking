@@ -15,7 +15,7 @@ func (h *CustomerHandler) CreateCustomer(ctx context.Context, m *pb.CreateCustom
 		Email:       m.Email,
 		Name:        m.Name,
 		Address:     m.Address,
-		DateOfBirth: time.Date(int(m.DateOfBirth.Year), time.Month(m.DateOfBirth.Month), int(m.DateOfBirth.Day), 0, 0, 0, 0, time.Local),
+		DateOfBirth: time.Date(int(m.DateOfBirth.Year), time.Month(m.DateOfBirth.Month), int(m.DateOfBirth.Day), 0, 0, 0, 0, time.UTC),
 	}
 
 	c, err := h.customerRepository.CreateCustomer(ctx, req)

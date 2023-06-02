@@ -29,8 +29,8 @@ func (r *entityResolver) FindFlightByID(ctx context.Context, id string) (*model.
 		AvailableSeats: int(c.AvailableSeats),
 		FromCity:       c.FromCity,
 		ToCity:         c.ToCity,
-		DepTime:        time.Date(int(c.DepTime.Year), time.Month(c.DepTime.Month), int(c.DepTime.Day), int(c.DepTime.Hour), int(c.DepTime.Minute), int(c.DepTime.Second), 0, time.Local),
-		ArrTime:        time.Date(int(c.ArrTime.Year), time.Month(c.ArrTime.Month), int(c.ArrTime.Day), int(c.ArrTime.Hour), int(c.ArrTime.Minute), int(c.ArrTime.Second), 0, time.Local),
+		DepTime:        time.Date(int(c.DepTime.Year), time.Month(c.DepTime.Month), int(c.DepTime.Day), int(c.DepTime.Hour), int(c.DepTime.Minute), int(c.DepTime.Second), 0, time.UTC),
+		ArrTime:        time.Date(int(c.ArrTime.Year), time.Month(c.ArrTime.Month), int(c.ArrTime.Day), int(c.ArrTime.Hour), int(c.ArrTime.Minute), int(c.ArrTime.Second), 0, time.UTC),
 		Status:         c.Status,
 	}
 

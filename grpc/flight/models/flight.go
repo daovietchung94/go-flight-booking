@@ -25,15 +25,21 @@ func (m *Flight) ToPBModel() *pb.Flight {
 		AvailableSeats: int32(m.AvailableSeats),
 		FromCity:       m.FromCity,
 		ToCity:         m.ToCity,
-		DepTime: &pb.Date{
-			Year:  int32(m.DepTime.Year()),
-			Month: int32(m.DepTime.Month()),
-			Day:   int32(m.DepTime.Day()),
+		DepTime: &pb.DateTime{
+			Year:   int32(m.DepTime.UTC().Year()),
+			Month:  int32(m.DepTime.UTC().Month()),
+			Day:    int32(m.DepTime.UTC().Day()),
+			Hour:   int32(m.DepTime.UTC().Hour()),
+			Minute: int32(m.DepTime.UTC().Minute()),
+			Second: int32(m.DepTime.UTC().Second()),
 		},
-		ArrTime: &pb.Date{
-			Year:  int32(m.ArrTime.Year()),
-			Month: int32(m.ArrTime.Month()),
-			Day:   int32(m.ArrTime.Day()),
+		ArrTime: &pb.DateTime{
+			Year:   int32(m.ArrTime.UTC().Year()),
+			Month:  int32(m.ArrTime.UTC().Month()),
+			Day:    int32(m.ArrTime.UTC().Day()),
+			Hour:   int32(m.ArrTime.UTC().Hour()),
+			Minute: int32(m.ArrTime.UTC().Minute()),
+			Second: int32(m.ArrTime.UTC().Second()),
 		},
 		Status: m.Status,
 	}

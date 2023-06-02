@@ -3,9 +3,11 @@ package handlers
 import (
 	"go-training/grpc/booking/repository"
 	"go-training/pb"
+	"sync"
 )
 
 type BookingHandler struct {
+	mutex *sync.Mutex
 	pb.UnimplementedMyBookingServer
 	bookingRepository repository.BookingRepository
 	myPlaneClient     pb.MyPlaneClient
@@ -13,8 +15,9 @@ type BookingHandler struct {
 	myCustomerClient  pb.MyCustomerClient
 }
 
-func NewBookingHandler(bookingRepository repository.BookingRepository, myPlaneClient pb.MyPlaneClient, myFlightClient pb.MyFlightClient, myCustomerClient pb.MyCustomerClient) (*BookingHandler, error) {
+func NewBookingHandler(mutex *sync.Mutex, bookingRepository repository.BookingRepository, myPlaneClient pb.MyPlaneClient, myFlightClient pb.MyFlightClient, myCustomerClient pb.MyCustomerClient) (*BookingHandler, error) {
 	return &BookingHandler{
+		mutex:             mutex,
 		bookingRepository: bookingRepository,
 		myPlaneClient:     myPlaneClient,
 		myFlightClient:    myFlightClient,

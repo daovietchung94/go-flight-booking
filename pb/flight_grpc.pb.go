@@ -25,6 +25,7 @@ type MyFlightClient interface {
 	GetFlights(ctx context.Context, in *GetFlightsRequest, opts ...grpc.CallOption) (*GetFlightsResponse, error)
 	CreateFlight(ctx context.Context, in *CreateFlightRequest, opts ...grpc.CallOption) (*Flight, error)
 	UpdateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*Flight, error)
+	UpdateFlightAvailableSeats(ctx context.Context, in *UpdateFlightAvailableSeatsRequest, opts ...grpc.CallOption) (*Flight, error)
 	GetFlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error)
 }
 
@@ -63,6 +64,15 @@ func (c *myFlightClient) UpdateFlight(ctx context.Context, in *Flight, opts ...g
 	return out, nil
 }
 
+func (c *myFlightClient) UpdateFlightAvailableSeats(ctx context.Context, in *UpdateFlightAvailableSeatsRequest, opts ...grpc.CallOption) (*Flight, error) {
+	out := new(Flight)
+	err := c.cc.Invoke(ctx, "/proto.MyFlight/UpdateFlightAvailableSeats", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *myFlightClient) GetFlightDetails(ctx context.Context, in *GetFlightDetailsRequest, opts ...grpc.CallOption) (*Flight, error) {
 	out := new(Flight)
 	err := c.cc.Invoke(ctx, "/proto.MyFlight/GetFlightDetails", in, out, opts...)
@@ -79,6 +89,7 @@ type MyFlightServer interface {
 	GetFlights(context.Context, *GetFlightsRequest) (*GetFlightsResponse, error)
 	CreateFlight(context.Context, *CreateFlightRequest) (*Flight, error)
 	UpdateFlight(context.Context, *Flight) (*Flight, error)
+	UpdateFlightAvailableSeats(context.Context, *UpdateFlightAvailableSeatsRequest) (*Flight, error)
 	GetFlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error)
 	mustEmbedUnimplementedMyFlightServer()
 }
@@ -95,6 +106,9 @@ func (UnimplementedMyFlightServer) CreateFlight(context.Context, *CreateFlightRe
 }
 func (UnimplementedMyFlightServer) UpdateFlight(context.Context, *Flight) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFlight not implemented")
+}
+func (UnimplementedMyFlightServer) UpdateFlightAvailableSeats(context.Context, *UpdateFlightAvailableSeatsRequest) (*Flight, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFlightAvailableSeats not implemented")
 }
 func (UnimplementedMyFlightServer) GetFlightDetails(context.Context, *GetFlightDetailsRequest) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFlightDetails not implemented")
@@ -166,6 +180,24 @@ func _MyFlight_UpdateFlight_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MyFlight_UpdateFlightAvailableSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFlightAvailableSeatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MyFlightServer).UpdateFlightAvailableSeats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.MyFlight/UpdateFlightAvailableSeats",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MyFlightServer).UpdateFlightAvailableSeats(ctx, req.(*UpdateFlightAvailableSeatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MyFlight_GetFlightDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetFlightDetailsRequest)
 	if err := dec(in); err != nil {
@@ -202,6 +234,10 @@ var MyFlight_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateFlight",
 			Handler:    _MyFlight_UpdateFlight_Handler,
+		},
+		{
+			MethodName: "UpdateFlightAvailableSeats",
+			Handler:    _MyFlight_UpdateFlightAvailableSeats_Handler,
 		},
 		{
 			MethodName: "GetFlightDetails",

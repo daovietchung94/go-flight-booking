@@ -10,8 +10,8 @@ import (
 	"go-training/clients/graphql/flight_manager/generated"
 	"go-training/clients/graphql/flight_manager/model"
 	"go-training/pb"
+	"go-training/pkg/utils"
 	"strings"
-	"time"
 )
 
 // CreateFlight is the resolver for the createFlight field.
@@ -20,22 +20,8 @@ func (r *mutationResolver) CreateFlight(ctx context.Context, input model.CreateF
 		PlaneNumber: input.PlaneNumber,
 		FromCity:    input.FromCity,
 		ToCity:      input.ToCity,
-		DepTime: &pb.DateTime{
-			Year:   int32(input.DepTime.Year()),
-			Month:  int32(input.DepTime.Month()),
-			Day:    int32(input.DepTime.Day()),
-			Hour:   int32(input.DepTime.Hour()),
-			Minute: int32(input.DepTime.Minute()),
-			Second: int32(input.DepTime.Second()),
-		},
-		ArrTime: &pb.DateTime{
-			Year:   int32(input.ArrTime.Year()),
-			Month:  int32(input.ArrTime.Month()),
-			Day:    int32(input.ArrTime.Day()),
-			Hour:   int32(input.ArrTime.Hour()),
-			Minute: int32(input.ArrTime.Minute()),
-			Second: int32(input.ArrTime.Second()),
-		},
+		DepTime:     utils.ToPbDateTime(input.DepTime),
+		ArrTime:     utils.ToPbDateTime(input.ArrTime),
 	}
 
 	pRes, err := r.MyFlightClient.CreateFlight(ctx, pReq)
@@ -49,8 +35,8 @@ func (r *mutationResolver) CreateFlight(ctx context.Context, input model.CreateF
 		AvailableSeats: int(pRes.AvailableSeats),
 		FromCity:       pRes.FromCity,
 		ToCity:         pRes.ToCity,
-		DepTime:        time.Date(int(pRes.DepTime.Year), time.Month(pRes.DepTime.Month), int(pRes.DepTime.Day), int(pRes.DepTime.Hour), int(pRes.DepTime.Minute), int(pRes.DepTime.Second), 0, time.Local),
-		ArrTime:        time.Date(int(pRes.ArrTime.Year), time.Month(pRes.ArrTime.Month), int(pRes.ArrTime.Day), int(pRes.ArrTime.Hour), int(pRes.ArrTime.Minute), int(pRes.ArrTime.Second), 0, time.Local),
+		DepTime:        utils.ToTime(pRes.DepTime),
+		ArrTime:        utils.ToTime(pRes.ArrTime),
 		Status:         pRes.Status,
 	}
 
@@ -68,14 +54,7 @@ func (r *queryResolver) GetFlights(ctx context.Context, input model.GetFlightsRe
 
 	if input.Filter != nil {
 		if input.Filter.Time != nil {
-			pReq.Filter.Time = &pb.DateTime{
-				Year:   int32(input.Filter.Time.Year()),
-				Month:  int32(input.Filter.Time.Month()),
-				Day:    int32(input.Filter.Time.Day()),
-				Hour:   int32(input.Filter.Time.Hour()),
-				Minute: int32(input.Filter.Time.Minute()),
-				Second: int32(input.Filter.Time.Second()),
-			}
+			pReq.Filter.Time = utils.ToPbDateTime(*input.Filter.Time)
 		}
 		if input.Filter.City != nil {
 			if city := strings.TrimSpace(*input.Filter.City); city != "" {
@@ -97,8 +76,8 @@ func (r *queryResolver) GetFlights(ctx context.Context, input model.GetFlightsRe
 			AvailableSeats: int(v.AvailableSeats),
 			FromCity:       v.FromCity,
 			ToCity:         v.ToCity,
-			DepTime:        time.Date(int(v.DepTime.Year), time.Month(v.DepTime.Month), int(v.DepTime.Day), int(v.DepTime.Hour), int(v.DepTime.Minute), int(v.DepTime.Second), 0, time.Local),
-			ArrTime:        time.Date(int(v.ArrTime.Year), time.Month(v.ArrTime.Month), int(v.ArrTime.Day), int(v.ArrTime.Hour), int(v.ArrTime.Minute), int(v.ArrTime.Second), 0, time.Local),
+			DepTime:        utils.ToTime(v.DepTime),
+			ArrTime:        utils.ToTime(v.ArrTime),
 			Status:         v.Status,
 		}
 	}

@@ -23,10 +23,13 @@ func (m *Reservation) ToPBModel() *pb.Reservation {
 		Customer: &pb.Customer{
 			Id: m.CustomerId.String(),
 		},
-		ReservationDate: &pb.Date{
-			Year:  int32(m.ReservationDate.Year()),
-			Month: int32(m.ReservationDate.Month()),
-			Day:   int32(m.ReservationDate.Day()),
+		ReservationDate: &pb.DateTime{
+			Year:   int32(m.ReservationDate.UTC().Year()),
+			Month:  int32(m.ReservationDate.UTC().Month()),
+			Day:    int32(m.ReservationDate.UTC().Day()),
+			Hour:   int32(m.ReservationDate.UTC().Hour()),
+			Minute: int32(m.ReservationDate.UTC().Minute()),
+			Second: int32(m.ReservationDate.UTC().Second()),
 		},
 		Status: m.Status,
 	}

@@ -56,7 +56,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	planeServiceClient := pb.NewMyPlaneClient(planeConn)
 
 	handler, err := handlers.NewFlightHandler(flightRepository, planeServiceClient)

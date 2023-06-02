@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"go-training/grpc/flight/models"
 	"go-training/pb"
@@ -17,16 +16,14 @@ func (h *FlightHandler) CreateFlight(context context.Context, request *pb.Create
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	fmt.Print(plane)
-
 	flight := &models.Flight{
 		Id:             uuid.New(),
 		PlaneNumber:    request.PlaneNumber,
 		AvailableSeats: int(plane.NumOfSeats),
 		FromCity:       request.FromCity,
 		ToCity:         request.ToCity,
-		DepTime:        time.Date(int(request.DepTime.Year), time.Month(request.DepTime.Month), int(request.DepTime.Day), 0, 0, 0, 0, time.Local),
-		ArrTime:        time.Date(int(request.ArrTime.Year), time.Month(request.ArrTime.Month), int(request.ArrTime.Day), 0, 0, 0, 0, time.Local),
+		DepTime:        time.Date(int(request.DepTime.Year), time.Month(request.DepTime.Month), int(request.DepTime.Day), int(request.DepTime.Hour), int(request.DepTime.Minute), int(request.DepTime.Second), 0, time.UTC),
+		ArrTime:        time.Date(int(request.ArrTime.Year), time.Month(request.ArrTime.Month), int(request.ArrTime.Day), int(request.ArrTime.Hour), int(request.ArrTime.Minute), int(request.ArrTime.Second), 0, time.UTC),
 	}
 
 	c, err := h.flightRepository.CreateFlight(context, flight)

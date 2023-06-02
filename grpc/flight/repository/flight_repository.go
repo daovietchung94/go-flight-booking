@@ -16,6 +16,7 @@ type FlightRepository interface {
 	GetFlights(context context.Context, pagination pagination.Pagination) (*pagination.Pagination, error)
 	CreateFlight(context context.Context, model *models.Flight) (*models.Flight, error)
 	UpdateFlight(context context.Context, model *models.Flight) (*models.Flight, error)
+	UpdateFlightAvailableSeats(context context.Context, id uuid.UUID, availableSeats int) (*models.Flight, error)
 	FlightDetails(context context.Context, id uuid.UUID) (*models.Flight, error)
 }
 
@@ -29,7 +30,7 @@ func (conn *dbmanager) GetFlights(context context.Context, pagination pagination
 			query = query.Where("from_city LIKE ? OR to_city LIKE ?", "%"+filter.City+"%", "%"+filter.City+"%")
 		}
 		if filter.Time != nil {
-			startOfDay := time.Date(int(filter.Time.Year), time.Month(filter.Time.Month), int(filter.Time.Day), 0, 0, 0, 0, time.Local)
+			startOfDay := time.Date(int(filter.Time.Year), time.Month(filter.Time.Month), int(filter.Time.Day), 0, 0, 0, 0, time.UTC)
 			endOfDay := startOfDay.Add(24 * time.Hour)
 			query = query.Where("(dep_time >= ? AND dep_time < ?) OR (arr_time >= ? AND arr_time < ?)", startOfDay, endOfDay, startOfDay, endOfDay)
 		}
@@ -75,22 +76,35 @@ func (conn *dbmanager) UpdateFlight(context context.Context, model *models.Fligh
 	return model, nil
 }
 
+func (conn *dbmanager) UpdateFlightAvailableSeats(context context.Context, id uuid.UUID, availableSeats int) (*models.Flight, error) {
+	var flight *models.Flight
+	err := conn.db.First(&flight, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	flight.AvailableSeats = availableSeats
+	err = conn.db.Updates(&flight).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return flight, nil
+}
+
 func (conn *dbmanager) FlightDetails(context context.Context, id uuid.UUID) (*models.Flight, error) {
-	cs := &models.Flight{}
-	err := conn.db.First(&models.Flight{Id: id}).Find(&cs).Error
+	var flight *models.Flight
+	err := conn.db.First(&models.Flight{Id: id}).Find(&flight).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return cs, nil
+	return flight, nil
 }
 
 func (conn *dbmanager) BookFlight(context context.Context, id uuid.UUID) (bool, error) {
-	conn.mutex.Lock()
-	defer conn.mutex.Unlock()
-
-	flight := models.Flight{}
+	var flight *models.Flight
 	err := conn.db.First(&models.Flight{Id: id}).Find(&flight).Error
 	if err != nil {
 		return false, err

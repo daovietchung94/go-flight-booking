@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	log "go-training/logger"
@@ -21,6 +22,7 @@ import (
 
 var (
 	configPath = kingpin.Flag("config", "Location of config.json.").Default("./config.json").String()
+	m          sync.Mutex
 )
 
 func main() {
@@ -73,7 +75,7 @@ func main() {
 
 	customerServiceClient := pb.NewMyCustomerClient(customerConn)
 
-	handler, err := handlers.NewBookingHandler(bookingRepository, planeServiceClient, flightServiceClient, customerServiceClient)
+	handler, err := handlers.NewBookingHandler(&m, bookingRepository, planeServiceClient, flightServiceClient, customerServiceClient)
 	if err != nil {
 		log.Fatal(err)
 	}
